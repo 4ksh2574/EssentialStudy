@@ -41,6 +41,17 @@ function App() {
     );
   };
 
+  if (!profile) {
+    return <Onboarding onComplete={(nextProfile) => {
+      try {
+        localStorage.setItem("essentialstudy.profile", JSON.stringify(nextProfile));
+      } catch {
+        // Continue with in-memory profile if browser storage is unavailable.
+      }
+      setProfile(nextProfile);
+    }} />;
+  }
+
   return (
     <main className={dark ? "app dark" : "app"}>
       <div className="ambient ambient-one" />
