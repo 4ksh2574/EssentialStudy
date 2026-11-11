@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Onboarding, { type StudentProfile } from "./components/Onboarding";
 import { AnimatePresence, motion } from "motion/react";
 import {
   BookOpen, CalendarDays, Check, ChevronRight, CircleHelp,
@@ -22,6 +23,14 @@ const tasks = [
 ];
 
 function App() {
+  const [profile, setProfile] = useState<StudentProfile | null>(() => {
+    try {
+      const saved = localStorage.getItem("essentialstudy.profile");
+      return saved ? JSON.parse(saved) as StudentProfile : null;
+    } catch {
+      return null;
+    }
+  });
   const [section, setSection] = useState<Section>("Home");
   const [dark, setDark] = useState(false);
   const [completed, setCompleted] = useState<string[]>(["Complete motion worksheet"]);
@@ -47,7 +56,7 @@ function App() {
           <button className="icon-button" aria-label="Toggle theme" onClick={() => setDark(!dark)}>
             {dark ? <Sun size={18} /> : <Moon size={18} />}
           </button>
-          <button className="profile-chip" aria-label="Profile and settings"><span> S </span></button>
+          <button className="profile-chip" aria-label="Profile and settings"><span>{profile.name.slice(0, 1).toUpperCase()}</span></button>
         </div>
       </header>
 
@@ -88,7 +97,7 @@ function App() {
                     <div>
                       <p className="eyebrow">YOUR PERSONAL STUDY SPACE</p>
                       <h1>A little progress,<br /><span>every day.</span></h1>
-                      <p className="intro">A calmer place to plan, learn and keep moving forward.</p>
+                      <p className="intro">Class {profile.classLevel} · {profile.board}{profile.state ? ` · ${profile.state}` : ""} · {profile.session}. A calmer place to plan, learn and keep moving forward.</p>
                     </div>
                     <div className="date-pill"><CalendarDays size={16} /> Wednesday, 11 November</div>
                   </div>
