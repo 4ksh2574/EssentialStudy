@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
-import { AlarmClock, BookOpen, Check, ChevronRight, Coffee, MapPin, Pencil, Plus, Trash2, X } from "lucide-react";
+import { AlarmClock, BookOpen, Check, ChevronRight, Coffee, Pencil, Plus, Trash2, X } from "lucide-react";
 
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"] as const;
 type Day = typeof DAYS[number];
@@ -158,7 +158,7 @@ export default function Timetable({ subjects }: Props) {
       {daySlots.length ? (
         <div className="timetable-slots">
           <div className="timetable-rail" />
-          {daySlots.map((slot, index) => {
+          {daySlots.map((slot) => {
             const Icon = slot.kind === "Break" ? Coffee : slot.kind === "Study" ? BookOpen : AlarmClock;
             return <article className={"timetable-slot kind-" + slot.kind.toLowerCase()} key={slot.id}>
               <div className="timetable-time"><strong>{timeLabel(slot.start)}</strong><span>{timeLabel(slot.end)}</span></div>
