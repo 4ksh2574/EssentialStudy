@@ -2,7 +2,7 @@ import { useState } from "react";
 import Onboarding, { type StudentProfile } from "./components/Onboarding";
 import Planner from "./components/Planner";
 import Syllabus from "./components/Syllabus";
-import { AnimatePresence, motion } from "motion/react";
+import { motion } from "motion/react";
 import {
   BookOpen, CalendarDays, Check, ChevronRight, CircleHelp,
   Clock3, GraduationCap, LayoutDashboard, ListTodo, Moon,
@@ -96,14 +96,7 @@ function App() {
         </aside>
 
         <section className="content">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={section}
-              initial={{ opacity: 0, y: 9, filter: "blur(5px)" }}
-              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              exit={{ opacity: 0, y: -6, filter: "blur(3px)" }}
-              transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
-            >
+          <motion.div key={section} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}>
               {section === "Planner" ? (
                 <Planner subjects={profile.subjects} />
               ) : section === "Syllabus" ? (
@@ -170,7 +163,6 @@ function App() {
                 </div>
               )}
             </motion.div>
-          </AnimatePresence>
         </section>
       </div>
 
