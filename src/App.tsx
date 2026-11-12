@@ -173,7 +173,7 @@ function App() {
                     })}
                   </div>
                 </>
-              ) : null
+              ) : null}
             </motion.div>
         </section>
       </div>
