@@ -224,3 +224,40 @@ button:focus-visible,a:focus-visible{outline:3px solid rgba(23,139,120,.35);outl
  .syllabus-chapter-number{min-width:18px}
  .syllabus-delete{width:26px}
 }
+
+/* Resizable subject tiles — quick-settings inspired */
+.syllabus-folder-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:148px;grid-auto-flow:dense;gap:12px}
+.syllabus-folder{position:relative;display:flex;flex-direction:column;justify-content:flex-start;min-width:0;height:100%;padding:17px 18px 14px;border:1px solid var(--line);border-radius:20px;background:rgba(255,255,255,.62);color:var(--ink);text-align:left;overflow:hidden;transition:transform .2s,border-color .2s,background .2s}
+.syllabus-folder:hover{transform:translateY(-2px);border-color:rgba(41,151,126,.28);background:rgba(255,255,255,.86)}
+.syllabus-folder-open{display:flex;flex:1;flex-direction:column;align-items:stretch;justify-content:flex-start;min-width:0;width:100%;padding:0 34px 0 0;border:0;background:transparent;color:inherit;text-align:left;cursor:pointer}
+.syllabus-folder-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.syllabus-folder-icon{width:34px;height:34px;border-radius:12px;background:#e2f3ea;color:#23866f;display:grid;place-items:center}
+.syllabus-folder-arrow{color:#9aaba2;position:absolute;right:16px;top:27px}
+.syllabus-folder-open>strong{display:block;font:700 14px Manrope;color:#29483e;overflow-wrap:anywhere}
+.syllabus-folder-meta{display:block;margin-top:5px;color:#91a098;font-size:9px}
+.syllabus-folder-track{height:5px;flex:none;border-radius:20px;background:rgba(45,123,96,.1);overflow:hidden;margin-top:auto}
+.syllabus-folder-track span{display:block;height:100%;border-radius:20px;background:#29977e;transition:width .25s}
+.syllabus-folder-percent{display:block;margin-top:6px;color:#6d9583;font-size:9px;font-weight:700}
+.syllabus-folder-resize{position:absolute;right:9px;bottom:9px;width:27px;height:27px;display:grid;place-items:center;border:1px solid rgba(69,123,101,.12);border-radius:9px;background:rgba(239,248,243,.9);color:#779487;cursor:pointer;touch-action:manipulation}
+.syllabus-folder-resize:hover{background:#dff1e8;color:#23866f}
+.syllabus-folder.size-medium{grid-column:span 2}
+.syllabus-folder.size-large{grid-column:span 2;grid-row:span 2;padding:21px 22px 18px}
+.syllabus-folder.size-large .syllabus-folder-open>strong{font-size:17px}
+.syllabus-folder.size-large .syllabus-folder-icon{width:43px;height:43px;border-radius:15px}
+.syllabus-folder.size-large .syllabus-folder-top{margin-bottom:19px}
+.syllabus-folder.size-large .syllabus-folder-meta{font-size:10px}
+.dark .syllabus-folder{background:rgba(255,255,255,.045)}
+.dark .syllabus-folder-open>strong{color:#e0eee7}
+.dark .syllabus-folder-meta{color:#9aada4}
+.dark .syllabus-folder-resize{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.08);color:#a5bdb0}
+@media(max-width:640px){
+ .syllabus-folder-grid{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:140px;gap:9px}
+ .syllabus-folder{padding:14px 14px 12px;border-radius:17px}
+ .syllabus-folder.size-large{padding:18px}
+ .syllabus-folder-resize{right:7px;bottom:7px;width:25px;height:25px}
+}
+@media(max-width:370px){
+ .syllabus-folder-grid{grid-template-columns:1fr}
+ .syllabus-folder.size-medium,.syllabus-folder.size-large{grid-column:span 1}
+ .syllabus-folder.size-large{grid-row:span 2}
+}
