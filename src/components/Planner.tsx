@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import {
-  CalendarDays, Check, ChevronDown, Circle, Clock3, Filter,
+  CalendarDays, Check, Circle, Filter,
   ListTodo, Pencil, Plus, Search, Trash2, X
 } from "lucide-react";
 
