@@ -105,11 +105,20 @@ export default function Planner({ subjects }: Props) {
       })
       .sort((a, b) => {
         if (a.completed !== b.completed) return Number(a.completed) - Number(b.completed);
-        if (!a.dueDate) return 1;
-        if (!b.dueDate) return -1;
-        return a.dueDate.localeCompare(b.dueDate) || b.createdAt - a.createdAt;
+        if (sortBy === "priority") {
+          const rank = { High: 0, Medium: 1, Low: 2 };
+          return rank[a.priority] - rank[b.priority] ||
+            (a.dueDate || "9999").localeCompare(b.dueDate || "9999") ||
+            b.createdAt - a.createdAt;
+        }
+        if (sortBy === "dueDate") {
+          return (a.dueDate || "9999").localeCompare(b.dueDate || "9999") || b.createdAt - a.createdAt;
+        }
+        if (sortBy === "createdAt") return b.createdAt - a.createdAt;
+        return a.subject.localeCompare(b.subject, undefined, { sensitivity: "base" }) ||
+          (a.dueDate || "9999").localeCompare(b.dueDate || "9999");
       });
-  }, [tasks, filter, query, today]);
+  }, [tasks, filter, query, today, sortBy]);
 
   const resetForm = () => {
     setTitle("");
@@ -205,6 +214,15 @@ export default function Planner({ subjects }: Props) {
         <label className="planner-search">
           <Search size={16} />
           <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search tasks" aria-label="Search tasks" />
+        </label>
+        <label className="planner-sort">
+          <span>Sort</span>
+          <select value={sortBy} onChange={(event) => setSortBy(event.target.value as SortKey)} aria-label="Sort tasks">
+            <option value="priority">Priority</option>
+            <option value="dueDate">Due date</option>
+            <option value="createdAt">Date created</option>
+            <option value="subject">Subject</option>
+          </select>
         </label>
       </div>
 
