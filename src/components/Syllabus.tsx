@@ -58,6 +58,7 @@ export default function Syllabus({ subjects }: Props) {
   const [draft, setDraft] = useState("");
   const [dragging, setDragging] = useState<string | null>(null);
   const gesture = useRef<Gesture | null>(null);
+  const suppressOpen = useRef(false);
   const gridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -112,7 +113,7 @@ export default function Syllabus({ subjects }: Props) {
     const current = folderSizes[subject] ?? DEFAULT_LAYOUT;
     gesture.current = { kind, subject, pointerId: event.pointerId, x: event.clientX, y: event.clientY, cols: current.cols, rows: current.rows, moved: false, over: subject };
     event.currentTarget.setPointerCapture(event.pointerId);
-    if (kind === "move") setDragging(subject);
+    if (kind === "move") { suppressOpen.current = false; setDragging(subject); }
   };
 
   const moveGesture = (event: ReactPointerEvent<HTMLDivElement>) => {
@@ -152,6 +153,7 @@ export default function Syllabus({ subjects }: Props) {
         return all;
       });
     }
+    if (current.kind === "move" && current.moved) suppressOpen.current = true;
     gesture.current = null;
     setDragging(null);
   };
@@ -179,7 +181,7 @@ export default function Syllabus({ subjects }: Props) {
             style={{ gridColumn: `span ${size.cols}`, gridRow: `span ${size.rows}` }}
           >
             <button className="syllabus-folder-move" onPointerDown={event => startGesture("move", subject, event)} aria-label={`Move ${subject} folder`} title="Drag to move"><GripVertical size={15} /></button>
-            <button className="syllabus-folder-open" onClick={() => { if (!gesture.current?.moved) setActive(subject); }} aria-label={`Open ${subject} folder`}>
+            <button className="syllabus-folder-open" onClick={() => { if (suppressOpen.current) { suppressOpen.current = false; return; } setActive(subject); }} aria-label={`Open ${subject} folder`}>
               <span className="syllabus-folder-top"><span className="syllabus-folder-icon"><Folder size={21} /></span><ChevronRight size={17} className="syllabus-folder-arrow" /></span>
               <strong>{subject}</strong>
               <span className="syllabus-folder-meta">{total} {total === 1 ? "chapter" : "chapters"} · {completed} completed</span>
