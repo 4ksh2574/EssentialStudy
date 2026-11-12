@@ -42,6 +42,7 @@ export default function Notes({ subjects }: Props) {
   const [filter, setFilter] = useState("All subjects");
   const [selected, setSelected] = useState<Note | null>(null);
   const [editing, setEditing] = useState<Note | null>(null);
+  const [formOpen, setFormOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [subject, setSubject] = useState(subjects[0] ?? "");
   const [chapter, setChapter] = useState("");
@@ -61,6 +62,7 @@ export default function Notes({ subjects }: Props) {
   }, [notes, query, filter]);
 
   const openNew = () => {
+    setFormOpen(true);
     setEditing(null);
     setTitle("");
     setSubject(subjects[0] ?? "");
@@ -68,6 +70,7 @@ export default function Notes({ subjects }: Props) {
     setBody("");
   };
   const openEdit = (note: Note) => {
+    setFormOpen(true);
     setEditing(note);
     setTitle(note.title);
     setSubject(note.subject);
@@ -90,6 +93,7 @@ export default function Notes({ subjects }: Props) {
     };
     setNotes(current => editing ? current.map(note => note.id === editing.id ? updated : note) : [updated, ...current]);
     setEditing(null);
+    setFormOpen(false);
   };
   const remove = (id: string) => {
     setNotes(current => current.filter(note => note.id !== id));
@@ -125,16 +129,16 @@ export default function Notes({ subjects }: Props) {
       {!query && filter === "All subjects" && <button onClick={openNew}><Plus size={15} /> Create your first note</button>}
     </div>}
 
-    {editing !== null || title || body ? <div className="notes-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) setEditing(null); }}>
+    {formOpen ? <div className="notes-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) { setEditing(null); setFormOpen(false); } }}>
       <form className="notes-form" onSubmit={save}>
-        <header><div><span>{editing ? "EDIT YOUR NOTE" : "NEW STUDY NOTE"}</span><h2>{editing ? "Update note" : "Create a note"}</h2></div><button type="button" onClick={() => setEditing(null)} aria-label="Close"><X size={18} /></button></header>
+        <header><div><span>{editing ? "EDIT YOUR NOTE" : "NEW STUDY NOTE"}</span><h2>{editing ? "Update note" : "Create a note"}</h2></div><button type="button" onClick={() => { setEditing(null); setFormOpen(false); }} aria-label="Close"><X size={18} /></button></header>
         <label className="notes-field"><span>Title</span><input value={title} onChange={event => setTitle(event.target.value)} maxLength={100} placeholder="Give your note a title" required autoFocus /></label>
         <div className="notes-field-pair">
           <label className="notes-field"><span>Subject</span><select value={subject} onChange={event => { setSubject(event.target.value); setChapter(""); }} required>{subjects.map(item => <option key={item}>{item}</option>)}</select></label>
           <label className="notes-field"><span>Chapter <small>Optional</small></span><select value={chapter} onChange={event => setChapter(event.target.value)}><option value="">No chapter</option>{chapters.map(item => <option key={item}>{item}</option>)}</select></label>
         </div>
         <label className="notes-field"><span>Note</span><textarea value={body} onChange={event => setBody(event.target.value)} maxLength={12000} rows={8} placeholder="Write the key ideas in your own words..." required /></label>
-        <footer><button type="button" onClick={() => setEditing(null)}>Cancel</button><button type="submit" disabled={!title.trim() || !body.trim()}>Save note</button></footer>
+        <footer><button type="button" onClick={() => { setEditing(null); setFormOpen(false); }}>Cancel</button><button type="submit" disabled={!title.trim() || !body.trim()}>Save note</button></footer>
       </form>
     </div> : null}
 
