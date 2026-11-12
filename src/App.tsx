@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Onboarding, { type StudentProfile } from "./components/Onboarding";
 import Planner from "./components/Planner";
 import Syllabus from "./components/Syllabus";
+import Calendar from "./components/Calendar";
 import { motion } from "motion/react";
 import {
   BookOpen, CalendarDays, Check, ChevronRight, CircleHelp,
@@ -118,6 +119,8 @@ function App() {
                 <Planner subjects={profile.subjects} />
               ) : section === "Syllabus" ? (
                 <Syllabus subjects={profile.subjects} />
+              ) : section === "Calendar" ? (
+                <Calendar />
               ) : section === "Home" ? (
                 <>
                   <div className="welcome-row">
