@@ -4,21 +4,23 @@ import Planner from "./components/Planner";
 import Syllabus from "./components/Syllabus";
 import Calendar from "./components/Calendar";
 import Timetable from "./components/Timetable";
+import Notes from "./components/Notes";
 import { motion } from "motion/react";
 import {
-  BookOpen, CalendarDays, Check, ChevronRight, CircleHelp,
+  BookOpen, BookOpenText, CalendarDays, Check, ChevronRight, CircleHelp,
   Clock3, GraduationCap, LayoutDashboard, ListTodo, Moon,
   Plus, Search, Settings2, Sparkles, Sun, Target
 } from "lucide-react";
 
-type Section = "Home" | "Planner" | "Syllabus" | "Calendar" | "Timetable";
+type Section = "Home" | "Planner" | "Syllabus" | "Calendar" | "Timetable" | "Notes";
 
 const navItems = [
   { label: "Home" as const, icon: LayoutDashboard },
   { label: "Planner" as const, icon: ListTodo },
   { label: "Syllabus" as const, icon: BookOpen },
   { label: "Calendar" as const, icon: CalendarDays },
-  { label: "Timetable" as const, icon: Clock3 }
+  { label: "Timetable" as const, icon: Clock3 },
+  { label: "Notes" as const, icon: BookOpenText }
 ];
 
 const tasks = [
@@ -126,6 +128,8 @@ function App() {
                 <Calendar />
               ) : section === "Timetable" ? (
                 <Timetable subjects={profile.subjects} />
+              ) : section === "Notes" ? (
+                <Notes subjects={profile.subjects} />
               ) : section === "Home" ? (
                 <>
                   <div className="welcome-row">
