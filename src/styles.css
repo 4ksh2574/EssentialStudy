@@ -463,3 +463,28 @@ body,.app,.onboarding-screen{min-height:100vh;min-height:100dvh}
   .calendar-form{padding:14px}
   .calendar-form-row{gap:8px}
 }
+
+
+/* Keep the mobile navigation centred without relying on transform offsets */
+@media(max-width:850px){
+  .mobile-nav{
+    left:0;
+    right:0;
+    margin-inline:auto;
+    width:max-content;
+    max-width:calc(100vw - 24px - env(safe-area-inset-left) - env(safe-area-inset-right));
+    box-sizing:border-box;
+    justify-content:center;
+    gap:4px;
+    padding:6px;
+  }
+  .mobile-nav-item{
+    width:clamp(46px,17vw,67px);
+    min-width:0;
+    flex:1 1 clamp(46px,17vw,67px);
+  }
+}
+@media(max-width:360px){
+  .mobile-nav{gap:2px;padding:5px}
+  .mobile-nav-item{width:clamp(46px,16vw,56px);flex-basis:clamp(46px,16vw,56px)}
+}
