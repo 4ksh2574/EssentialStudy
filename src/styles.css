@@ -146,3 +146,17 @@ button:focus-visible,a:focus-visible{outline:3px solid rgba(23,139,120,.35);outl
  .planner-field-grid{grid-template-columns:1fr}
  .planner-modal{padding:22px 18px;border-radius:21px}
 }
+
+
+/* Task sorting controls */
+.planner-tools{display:flex;align-items:center;gap:9px}
+.planner-sort{height:38px;display:flex;align-items:center;gap:7px;padding:0 11px;border:1px solid var(--line);border-radius:99px;background:rgba(255,255,255,.62);color:#91a098}
+.planner-sort span{font-size:10px;white-space:nowrap}
+.planner-sort select{max-width:116px;border:0;outline:0;background:transparent;color:#49665a;font:600 10px 'DM Sans',sans-serif;cursor:pointer}
+.dark .planner-sort{background:rgba(255,255,255,.045);color:#9aada4}
+.dark .planner-sort select{color:#dcebe3}
+@media(max-width:640px){
+ .planner-tools{width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto}
+ .planner-sort{padding:0 9px}
+ .planner-sort select{max-width:100px}
+}
