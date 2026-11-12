@@ -3,6 +3,7 @@ import Onboarding, { type StudentProfile } from "./components/Onboarding";
 import Planner from "./components/Planner";
 import Syllabus from "./components/Syllabus";
 import Calendar from "./components/Calendar";
+import Timetable from "./components/Timetable";
 import { motion } from "motion/react";
 import {
   BookOpen, CalendarDays, Check, ChevronRight, CircleHelp,
@@ -10,13 +11,14 @@ import {
   Plus, Search, Settings2, Sparkles, Sun, Target
 } from "lucide-react";
 
-type Section = "Home" | "Planner" | "Syllabus" | "Calendar";
+type Section = "Home" | "Planner" | "Syllabus" | "Calendar" | "Timetable";
 
 const navItems = [
   { label: "Home" as const, icon: LayoutDashboard },
   { label: "Planner" as const, icon: ListTodo },
   { label: "Syllabus" as const, icon: BookOpen },
-  { label: "Calendar" as const, icon: CalendarDays }
+  { label: "Calendar" as const, icon: CalendarDays },
+  { label: "Timetable" as const, icon: Clock3 }
 ];
 
 const tasks = [
@@ -37,7 +39,8 @@ function App() {
   const [section, setSection] = useState<Section>("Home");
   const [dark, setDark] = useState<boolean>(() => {
     try {
-      return localStorage.getItem("essentialstudy.theme") === "dark";
+      const saved = localStorage.getItem("essentialstudy.theme");
+      return saved === null ? true : saved === "dark";
     } catch {
       return false;
     }
@@ -52,7 +55,7 @@ function App() {
     }
 
     const themeColor = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
-    themeColor?.setAttribute("content", dark ? "#101b19" : "#edf7f4");
+    themeColor?.setAttribute("content", dark ? "#000000" : "#f4f6f3");
   }, [dark]);
 
   const toggleTask = (title: string) => {
@@ -121,6 +124,8 @@ function App() {
                 <Syllabus subjects={profile.subjects} />
               ) : section === "Calendar" ? (
                 <Calendar />
+              ) : section === "Timetable" ? (
+                <Timetable subjects={profile.subjects} />
               ) : section === "Home" ? (
                 <>
                   <div className="welcome-row">
