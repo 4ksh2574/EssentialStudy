@@ -1078,3 +1078,111 @@ body,.app,.onboarding-screen{min-height:100vh;min-height:100dvh}
 .dark .notes-detail-date{color:#a39b8a}
 .dark .notes-detail-body{color:#c8c0ad}
 .dark .notes-detail>footer .notes-delete{color:#d19a88}
+
+
+/* Exams and revision */
+.exams-page{width:100%;max-width:930px;margin:0 auto;color:var(--ink)}
+.exams-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:22px}
+.exams-heading h1{margin:0;color:#243b32;font:800 clamp(30px,4vw,40px)/1.05 Manrope,sans-serif;letter-spacing:-1.8px}
+.exams-heading h1 span{color:#278b72}
+.exams-muted{margin:9px 0 0;color:#87958d;font-size:11px;line-height:1.6}
+.exams-add{display:flex;align-items:center;gap:7px;flex:none}
+.exams-tabs{display:flex;gap:5px;padding:4px;margin-bottom:17px;border:1px solid #e7eee7;border-radius:12px;background:#f5f8f4;width:max-content}
+.exams-tabs button{display:flex;align-items:center;gap:7px;padding:8px 13px;border:0;border-radius:9px;background:transparent;color:#829084;font:700 10px 'DM Sans',sans-serif;cursor:pointer}
+.exams-tabs button span{font-size:9px;opacity:.7}
+.exams-tabs button.active{background:#fff;color:#526d50;box-shadow:0 1px 5px #1b2d1b12}
+.exams-summary{display:flex;align-items:center;gap:13px;padding:17px;border:1px solid #e7eee7;border-radius:15px;background:#fff}
+.exams-summary-icon{width:39px;height:39px;display:grid;place-items:center;border-radius:12px;background:#edf4ed;color:#718d70}
+.exams-summary>div{display:grid;gap:4px;flex:1;min-width:0}
+.exams-summary small{color:#a0aaa1;font-size:8px;font-weight:800;letter-spacing:1px}
+.exams-summary strong{color:#435a49;font-size:13px;overflow-wrap:anywhere}
+.exams-summary>div span{color:#8b998e;font-size:9px}
+.exams-summary>b{flex:none;color:#9a7b3e;font-size:11px}
+.exams-list-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:24px 0 10px}
+.exams-list-heading h2{margin:0;color:#435a49;font:750 15px Manrope,sans-serif}
+.exams-list-heading button{border:0;background:transparent;color:#8c9b8e;font:700 9px 'DM Sans',sans-serif;cursor:pointer}
+.exams-list,.revision-list{display:grid;gap:8px}
+.exam-row,.revision-row{display:flex;align-items:center;gap:12px;min-width:0;padding:12px;border:1px solid #e7eee7;border-radius:13px;background:#fff}
+.exam-date{width:39px;height:43px;display:grid;align-content:center;justify-items:center;flex:none;border-radius:10px;background:#f2f5ef;color:#637b60}
+.exam-date strong{font:800 16px Manrope;line-height:1.1}
+.exam-date small{font-size:8px;text-transform:uppercase}
+.exam-copy,.revision-copy{display:grid;gap:4px;flex:1;min-width:0}
+.exam-copy strong,.revision-copy strong{color:#435a49;font-size:11px;overflow-wrap:anywhere}
+.exam-copy span,.revision-copy span{color:#8b998e;font-size:9px}
+.exam-copy>small,.revision-copy>small{color:#9ba69c;font-size:9px;overflow-wrap:anywhere}
+.exam-countdown{flex:none;color:#9a7b3e;font-size:9px;font-weight:800}
+.exam-actions{display:flex;align-items:center;gap:3px}
+.exam-actions button,.revision-delete{height:29px;min-width:29px;display:grid;place-items:center;padding:0 7px;border:0;border-radius:8px;background:transparent;color:#8d9a8f;font-size:9px;cursor:pointer}
+.exam-actions button:hover,.revision-delete:hover{background:#f2f5ef}
+.exams-empty{display:grid;justify-items:center;padding:39px 16px;border:1px dashed #dce6dc;border-radius:16px;text-align:center;color:#8a9b8d}
+.exams-empty>svg{margin-bottom:12px;color:#8ba085}
+.exams-empty strong{color:#526552;font-size:11px}
+.exams-empty p{max-width:280px;margin:7px 0 13px;color:#96a198;font-size:10px;line-height:1.5}
+.exams-empty button{display:flex;align-items:center;gap:6px;padding:9px 12px;border:0;border-radius:9px;background:#eaf2e9;color:#567d5b;font-size:9px;font-weight:800;cursor:pointer}
+.revision-progress{display:grid;gap:10px;margin:5px 0 18px;padding:15px;border:1px solid #e7eee7;border-radius:14px;background:#fff}
+.revision-progress>div:first-child{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.revision-progress span{color:#a0aaa1;font-size:8px;font-weight:800;letter-spacing:1px}
+.revision-progress strong{color:#637b60;font-size:10px}
+.revision-track{height:5px;overflow:hidden;border-radius:9px;background:#edf1eb}
+.revision-track i{display:block;height:100%;border-radius:9px;background:#a58a4d;transition:width .2s}
+.revision-check{width:31px;height:31px;display:grid;place-items:center;flex:none;border:1px solid #e5ebe3;border-radius:9px;background:#f7f9f5;color:#8b998e;cursor:pointer}
+.revision-check.done{border-color:#d9e6d5;background:#edf4ed;color:#64845f}
+.revision-status{flex:none;padding:6px 8px;border:0;border-radius:7px;background:#f3f4ef;color:#8a927f;font-size:8px;font-weight:800;cursor:pointer}
+.revision-status.status-in-progress{background:#f5f0e4;color:#a1854b}
+.revision-status.status-revised{background:#edf4ed;color:#658461}
+.exams-backdrop{position:fixed;inset:0;z-index:1002;display:grid;place-items:center;padding:15px;background:#10181088;backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
+.exams-form{width:min(100%,470px);max-height:90vh;overflow:auto;padding:21px;border:1px solid #e4ebe4;border-radius:19px;background:#fbfdfb;box-shadow:0 24px 80px #0c1e1138}
+.exams-form>header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:18px}
+.exams-form>header>div>span{color:#9aa59b;font-size:8px;font-weight:800;letter-spacing:1.2px}
+.exams-form h2{margin:5px 0 0;color:#344d3b;font:750 20px Manrope}
+.exams-form>header>button{width:31px;height:31px;display:grid;place-items:center;border:0;border-radius:9px;background:#eef3ed;color:#718575;cursor:pointer}
+.exams-field{display:grid;gap:6px;min-width:0;margin-bottom:12px}
+.exams-field>span{color:#718274;font-size:9px;font-weight:800}
+.exams-field>span small{color:#a0aaa1;font-weight:500}
+.exams-field input,.exams-field select,.exams-field textarea{width:100%;min-width:0;box-sizing:border-box;padding:10px;border:1px solid #e2eae2;border-radius:10px;background:#fff;color:#344d3b;font:11px 'DM Sans',sans-serif;outline:none}
+.exams-field input,.exams-field select{height:40px;padding-top:0;padding-bottom:0}
+.exams-field textarea{resize:vertical;line-height:1.5}
+.exams-field input:focus,.exams-field select:focus,.exams-field textarea:focus{border-color:#b59a5c}
+.exams-field-pair{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.exams-form>footer{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+.exams-form>footer button{height:37px;padding:0 14px;border:1px solid #e2eae2;border-radius:10px;background:transparent;color:#78877a;font-size:9px;font-weight:800;cursor:pointer}
+.exams-form>footer button[type=submit]{border:0;background:#637f5e;color:#fff}
+.exams-form>footer button:disabled{opacity:.45;cursor:not-allowed}
+@media(max-width:600px){.exams-heading{align-items:flex-start}.exams-heading h1{font-size:32px}.exams-add{padding:10px 12px;font-size:10px}.exam-row,.revision-row{gap:8px;padding:10px}.exam-countdown{font-size:8px}.exam-actions button{min-width:25px;padding:0 5px}.revision-status{font-size:7px;padding:6px}.exams-field-pair{grid-template-columns:1fr 1fr}}
+.dark .exams-page{color:#eee9dc}
+.dark .exams-heading h1{color:#eee9dc}
+.dark .exams-heading h1 span{color:#d9b96f}
+.dark .exams-muted{color:#a39b8a}
+.dark .exams-tabs{background:#050504;border-color:rgba(220,190,125,.14)}
+.dark .exams-tabs button{color:#a39b8a}
+.dark .exams-tabs button.active{background:#211b10;color:#e0c27c;box-shadow:none}
+.dark .exams-summary,.dark .exam-row,.dark .revision-row,.dark .revision-progress{background:#090908;border-color:rgba(220,190,125,.14)}
+.dark .exams-summary-icon{background:#211b10;color:#d8b96e}
+.dark .exams-summary strong,.dark .exams-list-heading h2,.dark .exam-copy strong,.dark .revision-copy strong{color:#eee6d5}
+.dark .exams-summary small,.dark .exams-summary>div span,.dark .exam-copy span,.dark .revision-copy span,.dark .exam-copy>small,.dark .revision-copy>small{color:#a39b8a}
+.dark .exams-summary>b,.dark .exam-countdown{color:#d9b96f}
+.dark .exams-list-heading button{color:#c0b28e}
+.dark .exam-date{background:#211b10;color:#d8b96e}
+.dark .exam-actions button,.dark .revision-delete{color:#b7aa8c}
+.dark .exam-actions button:hover,.dark .revision-delete:hover{background:#211b10}
+.dark .exams-empty{border-color:rgba(220,190,125,.2)}
+.dark .exams-empty>svg{color:#d8b96e}
+.dark .exams-empty strong{color:#e9e1d0}
+.dark .exams-empty p{color:#a39b8a}
+.dark .exams-empty button{background:#211b10;color:#e0c27c}
+.dark .revision-progress span{color:#a39b8a}
+.dark .revision-progress strong{color:#d8c38e}
+.dark .revision-track{background:#211b10}
+.dark .revision-track i{background:#c4a45c}
+.dark .revision-check{background:#11110e;border-color:rgba(220,190,125,.18);color:#b7aa8c}
+.dark .revision-check.done{background:#211b10;border-color:rgba(220,190,125,.3);color:#e0c27c}
+.dark .revision-status{background:#211b10;color:#c4b58e}
+.dark .revision-status.status-in-progress{background:#292112;color:#d8b96e}
+.dark .revision-status.status-revised{background:#242116;color:#d4c28d}
+.dark .exams-form{background:#090908;border-color:rgba(220,190,125,.17)}
+.dark .exams-form h2{color:#eee9dc}
+.dark .exams-form>header>button{background:#211b10;color:#d8b96e}
+.dark .exams-field>span{color:#c2b48f}
+.dark .exams-field input,.dark .exams-field select,.dark .exams-field textarea{background:#11110e;border-color:rgba(220,190,125,.18);color:#eee9dc;color-scheme:dark}
+.dark .exams-form>footer button{border-color:rgba(220,190,125,.18);color:#c4b898}
+.dark .exams-form>footer button[type=submit]{background:#c4a45c;color:#171208}
