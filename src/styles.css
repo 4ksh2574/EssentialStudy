@@ -320,3 +320,22 @@ button:focus-visible,a:focus-visible{outline:3px solid rgba(23,139,120,.35);outl
  .syllabus-folder-resize{width:45px;height:45px}
  .syllabus-cotton-grip{width:32px;height:32px}
 }
+
+/* Native-feeling interaction and rendering polish */
+html{scroll-behavior:smooth;overscroll-behavior-y:none}
+body{overscroll-behavior-y:contain}
+button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
+button,a{touch-action:manipulation}
+button{user-select:none;-webkit-user-select:none}
+.content{isolation:isolate}
+.mobile-nav,.topbar{transform:translateZ(0)}
+@media(hover:none){
+  .icon-button:hover,.primary-button:hover,.nav-link:hover,.task-row:hover,.syllabus-folder:hover{transform:none;box-shadow:initial}
+  .nav-link:hover,.task-row:hover{background:transparent}
+  .syllabus-folder:hover{border-color:var(--line);background:rgba(255,255,255,.62)}
+}
+@media(hover:none) and (pointer:coarse){
+  button:active{transform:scale(.985)}
+  .mobile-nav-item:active{background:rgba(41,151,126,.12)}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
