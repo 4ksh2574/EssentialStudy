@@ -261,3 +261,24 @@ button:focus-visible,a:focus-visible{outline:3px solid rgba(23,139,120,.35);outl
  .syllabus-folder.size-medium,.syllabus-folder.size-large{grid-column:span 1}
  .syllabus-folder.size-large{grid-row:span 2}
 }
+
+/* Direct-manipulation syllabus tiles */
+.syllabus-folder-grid{grid-template-columns:repeat(12,minmax(0,1fr));grid-auto-rows:44px;grid-auto-flow:row;gap:12px;align-items:stretch}
+.syllabus-folder{height:auto;min-height:0;transition:background .16s,border-color .16s,box-shadow .16s;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+.syllabus-folder:hover{transform:none}
+.syllabus-folder.is-dragging{z-index:4;opacity:.72;box-shadow:0 14px 36px rgba(24,90,70,.18);border-color:rgba(41,151,126,.55)}
+.syllabus-folder button{user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;outline:none}
+.syllabus-folder button:focus:not(:focus-visible){outline:none;box-shadow:none}
+.syllabus-folder button:focus-visible{outline:2px solid rgba(41,151,126,.55);outline-offset:2px}
+.syllabus-folder-move{position:absolute;right:10px;top:10px;z-index:2;width:27px;height:27px;display:grid;place-items:center;border:1px solid rgba(69,123,101,.12);border-radius:9px;background:rgba(239,248,243,.9);color:#779487;cursor:grab;touch-action:none}
+.syllabus-folder-move:active{cursor:grabbing;background:#dff1e8;color:#23866f}
+.syllabus-folder-open{height:100%;padding-right:30px;touch-action:pan-y}
+.syllabus-folder-resize{right:9px;bottom:9px;width:28px;height:28px;touch-action:none;cursor:nwse-resize}
+.syllabus-folder-resize:active{background:#dff1e8;color:#23866f}
+.dark .syllabus-folder-move{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.08);color:#a5bdb0}
+@media(max-width:640px){
+ .syllabus-folder-grid{grid-template-columns:repeat(12,minmax(0,1fr));grid-auto-rows:40px;gap:9px}
+ .syllabus-folder{padding:14px 14px 12px;border-radius:17px}
+ .syllabus-folder-move{right:7px;top:7px}
+ .syllabus-folder-resize{right:7px;bottom:7px;width:25px;height:25px}
+}
