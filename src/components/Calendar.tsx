@@ -1,76 +1,466 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
-import { CalendarDays, ChevronLeft, ChevronRight, Plus, X, Pencil, Trash2, Check, ClipboardList, Gift, Sun, GraduationCap, Flag, PartyPopper } from "lucide-react";
+import {
+  CalendarDays, CalendarRange, ChevronDown, ChevronLeft, ChevronRight,
+  Plus, X, Pencil, Trash2, Check, ClipboardList, Gift, Sun,
+  GraduationCap, Flag, PartyPopper, Sparkles
+} from "lucide-react";
 
 type EventType = "Birthday" | "Holiday" | "Personal event" | "Exam" | "Deadline";
-type CalendarEvent = { id:string; title:string; date:string; type:EventType; details:string; yearly:boolean; createdAt:number };
-type StudyTask = { id:string; title:string; subject:string; dueDate:string; completed:boolean };
-const EVENT_KEY="essentialstudy.calendar.events";
-const TASK_KEY="essentialstudy.tasks";
-const types:EventType[]=["Personal event","Birthday","Holiday","Exam","Deadline"];
-const nationalDays=[{title:"Republic Day",date:"01-26"},{title:"Independence Day",date:"08-15"},{title:"Gandhi Jayanti",date:"10-02"}];
-const weekdays=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-const dateValue=(d:Date)=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
-const dateObj=(s:string)=>new Date(`${s}T12:00:00`);
-const validDate=(s:string)=>/^\d{4}-\d{2}-\d{2}$/.test(s);
-function readEvents():CalendarEvent[]{try{const v=JSON.parse(localStorage.getItem(EVENT_KEY)||"[]");return Array.isArray(v)?v.filter(x=>x&&typeof x.id==="string"&&typeof x.title==="string"&&validDate(x.date)&&types.includes(x.type)&&typeof x.details==="string"):[]}catch{return[]}}
-function readTasks():StudyTask[]{try{const v=JSON.parse(localStorage.getItem(TASK_KEY)||"[]");return Array.isArray(v)?v.filter(x=>x&&typeof x.id==="string"&&typeof x.title==="string"&&typeof x.dueDate==="string"&&typeof x.completed==="boolean"):[]}catch{return[]}}
-function makeId(){return crypto.randomUUID?.()??`${Date.now()}-${Math.random()}`}
-function monthDays(month:Date){const first=new Date(month.getFullYear(),month.getMonth(),1);const start=new Date(month.getFullYear(),month.getMonth(),1-first.getDay());return Array.from({length:42},(_,i)=>{const d=new Date(start);d.setDate(start.getDate()+i);return d})}
-function niceDate(s:string){return dateObj(s).toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long"})}
-function eventOnDate(e:CalendarEvent,date:string){return e.yearly?e.date.slice(5)===date.slice(5):e.date===date}
-function builtIns(date:string){return nationalDays.filter(x=>x.date===date.slice(5)).map(x=>({...x,type:"Holiday" as const,id:`national-${x.date}`,details:"National observance",yearly:true,createdAt:0}))}
-function iconFor(type:string){if(type==="Birthday")return Gift;if(type==="Holiday")return Sun;if(type==="Exam")return GraduationCap;if(type==="Deadline")return Flag;if(type==="Personal event")return PartyPopper;return CalendarDays}
-export default function Calendar(){
- const [events,setEvents]=useState<CalendarEvent[]>(readEvents);
- const [tasks,setTasks]=useState<StudyTask[]>(readTasks);
- const [month,setMonth]=useState(()=>{const d=new Date();return new Date(d.getFullYear(),d.getMonth(),1)});
- const [selected,setSelected]=useState(dateValue(new Date()));
- const [formOpen,setFormOpen]=useState(false);
- const [editing,setEditing]=useState<string|null>(null);
- const [title,setTitle]=useState("");
- const [date,setDate]=useState(dateValue(new Date()));
- const [type,setType]=useState<EventType>("Personal event");
- const [details,setDetails]=useState("");
- const [yearly,setYearly]=useState(false);
- const [error,setError]=useState("");
- useEffect(()=>{try{localStorage.setItem(EVENT_KEY,JSON.stringify(events))}catch{}},[events]);
- useEffect(()=>{const refresh=()=>setTasks(readTasks());window.addEventListener("focus",refresh);window.addEventListener("storage",refresh);return()=>{window.removeEventListener("focus",refresh);window.removeEventListener("storage",refresh)}},[]);
- const days=useMemo(()=>monthDays(month),[month]);
- const selectedEvents=useMemo(()=>[...events.filter(e=>eventOnDate(e,selected)),...builtIns(selected)], [events,selected]);
- const selectedTasks=tasks.filter(t=>t.dueDate===selected);
- const eventsFor=(d:string)=>events.filter(e=>eventOnDate(e,d)).length+builtIns(d).length;
- const tasksFor=(d:string)=>tasks.filter(t=>t.dueDate===d).length;
- const monthLabel=month.toLocaleDateString("en-IN",{month:"long",year:"numeric"});
- const today=dateValue(new Date());
- const changeMonth=(n:number)=>{const next=new Date(month.getFullYear(),month.getMonth()+n,1);setMonth(next);setSelected(dateValue(next))};
- const openAdd=()=>{setEditing(null);setTitle("");setDate(selected);setType("Personal event");setDetails("");setYearly(false);setError("");setFormOpen(true)};
- const edit=(e:CalendarEvent)=>{setEditing(e.id);setTitle(e.title);setDate(e.date);setType(e.type);setDetails(e.details);setYearly(e.yearly);setError("");setFormOpen(true)};
- const close=()=>{setFormOpen(false);setEditing(null);setError("")};
- const save=(ev:FormEvent)=>{ev.preventDefault();if(!title.trim()||!validDate(date)){setError("Add a title and a valid date.");return}const item:CalendarEvent={id:editing??makeId(),title:title.trim(),date,type,details:details.trim(),yearly:type==="Birthday"&&yearly,createdAt:Date.now()};setEvents(current=>editing?current.map(x=>x.id===editing?{...item,createdAt:x.createdAt}:x):[item,...current]);setSelected(date);const d=dateObj(date);setMonth(new Date(d.getFullYear(),d.getMonth(),1));close()};
- const remove=(id:string)=>setEvents(current=>current.filter(e=>e.id!==id));
- return <section className="calendar-v2">
-  <header className="cal2-header"><div><p className="eyebrow">YOUR DATES, AT A GLANCE</p><h1>Calendar</h1><p>Keep the important days close.</p></div><button className="cal2-add" onClick={openAdd}><Plus size={17}/> Add date</button></header>
-  <div className="cal2-main">
-   <section className="cal2-month">
-    <div className="cal2-month-head"><div><span className="cal2-overline">MONTHLY VIEW</span><h2>{monthLabel}</h2></div><div className="cal2-month-controls"><button onClick={()=>{setMonth(new Date());setSelected(today)}}>Today</button><button aria-label="Previous month" onClick={()=>changeMonth(-1)}><ChevronLeft size={18}/></button><button aria-label="Next month" onClick={()=>changeMonth(1)}><ChevronRight size={18}/></button></div></div>
-    <div className="cal2-weekdays">{weekdays.map(d=><span key={d}>{d}</span>)}</div>
-    <div className="cal2-grid">{days.map(d=>{const value=dateValue(d);const count=eventsFor(value)+tasksFor(value);return <button key={value} onClick={()=>setSelected(value)} aria-pressed={selected===value} className={["cal2-day",d.getMonth()!==month.getMonth()?"muted":"",value===today?"today":"",value===selected?"chosen":""].join(" ")}><span>{d.getDate()}</span>{count>0&&<i className="cal2-dots"><b/><b className={eventsFor(value)>0?"has-event":""}/></i>}</button>})}</div>
-    <div className="cal2-legend"><span><i className="dot-task"/> Study task</span><span><i className="dot-event"/> Personal date</span><span><i className="dot-holiday"/> Holiday</span></div>
-   </section>
-   <aside className="cal2-agenda"><div className="cal2-agenda-top"><div><span className="cal2-overline">YOUR AGENDA</span><h2>{niceDate(selected)}</h2></div><button aria-label="Add date" onClick={openAdd}><Plus size={18}/></button></div>
-    {selectedTasks.length===0&&selectedEvents.length===0?<div className="cal2-empty"><CalendarDays size={24}/><strong>A clear day</strong><span>Nothing planned here yet.</span></div>:<div className="cal2-list">
-     {selectedTasks.map(t=><article className="cal2-item" key={t.id}><span className="cal2-item-icon task"><ClipboardList size={17}/></span><div><strong>{t.title}</strong><small>{t.subject||"Study task"} · Planner</small></div><span className="cal2-kind">Task</span>{t.completed&&<Check size={14}/>}</article>)}
-     {selectedEvents.map(e=>{const Icon=iconFor(e.type);return <article className="cal2-item" key={e.id}><span className={`cal2-item-icon ${e.type.toLowerCase().replace(" ","-")}`}><Icon size={17}/></span><div><strong>{e.title}</strong><small>{e.details||e.type}{e.yearly?" · Repeats yearly":""}</small></div><span className="cal2-kind">{e.type}</span>{!e.id.startsWith("national-")&&<div className="cal2-actions"><button aria-label="Edit date" onClick={()=>edit(e)}><Pencil size={14}/></button><button aria-label="Delete date" onClick={()=>remove(e.id)}><Trash2 size={14}/></button></div>}</article>})}
-    </div>}
-    <button className="cal2-add-inline" onClick={openAdd}><Plus size={15}/> Add something to this day</button>
-   </aside>
-  </div>
-  {formOpen&&<div className="cal2-modal-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)close()}}><form className="cal2-form" onSubmit={save}><div className="cal2-form-head"><div><span className="cal2-overline">{editing?"EDIT DATE":"MAKE A DATE"} </span><h2>{editing?"Update details":"Add to calendar"}</h2></div><button type="button" aria-label="Close" onClick={close}><X size={18}/></button></div>
-   <label className="cal2-field"><span>What is it?</span><input autoFocus value={title} onChange={e=>setTitle(e.target.value)} placeholder="e.g. Birthday, school event..." maxLength={80}/></label>
-   <div className="cal2-form-row"><label className="cal2-field"><span>Date</span><input type="date" value={date} onChange={e=>setDate(e.target.value)}/></label><label className="cal2-field"><span>Category</span><select value={type} onChange={e=>{setType(e.target.value as EventType);if(e.target.value!=="Birthday")setYearly(false)}}>{types.map(t=><option key={t}>{t}</option>)}</select></label></div>
-   <label className="cal2-field"><span>Notes <small>Optional</small></span><textarea value={details} onChange={e=>setDetails(e.target.value)} rows={2} maxLength={200} placeholder="A little detail to remember"/></label>
-   {type==="Birthday"&&<label className="cal2-repeat"><input type="checkbox" checked={yearly} onChange={e=>setYearly(e.target.checked)}/> Repeat every year</label>}
-   {error&&<p className="cal2-error">{error}</p>}<div className="cal2-form-footer"><button type="button" onClick={close}>Cancel</button><button type="submit">{editing?"Save changes":"Save date"}</button></div>
-  </form></div>}
- </section>
+type CalendarEvent = {
+  id: string;
+  title: string;
+  date: string;
+  type: EventType;
+  details: string;
+  yearly: boolean;
+  createdAt: number;
+};
+type StudyTask = {
+  id: string;
+  title: string;
+  subject: string;
+  dueDate: string;
+  completed: boolean;
+};
+type CalendarEntry = {
+  id: string;
+  title: string;
+  date: string;
+  kind: "task" | "event" | "holiday";
+  subtitle: string;
+  tag: string;
+  completed?: boolean;
+  event?: CalendarEvent;
+};
+type ViewMode = "day" | "upcoming";
+
+const EVENT_KEY = "essentialstudy.calendar.events";
+const TASK_KEY = "essentialstudy.tasks";
+const eventTypes: EventType[] = ["Personal event", "Birthday", "Holiday", "Exam", "Deadline"];
+const nationalDays = [
+  { title: "Republic Day", month: 1, day: 26 },
+  { title: "Independence Day", month: 8, day: 15 },
+  { title: "Gandhi Jayanti", month: 10, day: 2 }
+];
+const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+function dateValue(date: Date) {
+  return date.getFullYear() + "-" + String(date.getMonth() + 1).padStart(2, "0") + "-" + String(date.getDate()).padStart(2, "0");
+}
+function dateObject(value: string) {
+  return new Date(value + "T12:00:00");
+}
+function addDays(date: Date, amount: number) {
+  const next = new Date(date);
+  next.setDate(next.getDate() + amount);
+  return next;
+}
+function validDate(value: string) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const date = dateObject(value);
+  return !Number.isNaN(date.getTime()) && dateValue(date) === value;
+}
+function readEvents(): CalendarEvent[] {
+  try {
+    const value: unknown = JSON.parse(localStorage.getItem(EVENT_KEY) || "[]");
+    if (!Array.isArray(value)) return [];
+    return value.filter((item): item is CalendarEvent =>
+      item && typeof item.id === "string" &&
+      typeof item.title === "string" && validDate(item.date) &&
+      eventTypes.includes(item.type) && typeof item.details === "string"
+    ).map((item) => ({
+      ...item,
+      yearly: item.type === "Birthday" && item.yearly === true,
+      createdAt: typeof item.createdAt === "number" ? item.createdAt : 0
+    }));
+  } catch {
+    return [];
+  }
+}
+function readTasks(): StudyTask[] {
+  try {
+    const value: unknown = JSON.parse(localStorage.getItem(TASK_KEY) || "[]");
+    if (!Array.isArray(value)) return [];
+    return value.filter((item): item is StudyTask =>
+      item && typeof item.id === "string" &&
+      typeof item.title === "string" &&
+      typeof item.subject === "string" &&
+      typeof item.dueDate === "string" &&
+      typeof item.completed === "boolean"
+    );
+  } catch {
+    return [];
+  }
+}
+function makeId() {
+  return globalThis.crypto?.randomUUID?.() ?? String(Date.now()) + "-" + Math.random().toString(36).slice(2);
+}
+function monthDays(month: Date) {
+  const first = new Date(month.getFullYear(), month.getMonth(), 1);
+  const start = new Date(month.getFullYear(), month.getMonth(), 1 - first.getDay());
+  return Array.from({ length: 42 }, (_, index) => addDays(start, index));
+}
+function monthName(date: Date) {
+  return date.toLocaleDateString("en-IN", { month: "long", year: "numeric" });
+}
+function fullDate(value: string) {
+  return dateObject(value).toLocaleDateString("en-IN", {
+    weekday: "long", day: "numeric", month: "long", year: "numeric"
+  });
+}
+function iconFor(type: string) {
+  if (type === "Birthday") return Gift;
+  if (type === "Holiday") return Sun;
+  if (type === "Exam") return GraduationCap;
+  if (type === "Deadline") return Flag;
+  if (type === "Personal event") return PartyPopper;
+  return CalendarDays;
+}
+function entriesForDate(value: string, events: CalendarEvent[], tasks: StudyTask[]): CalendarEntry[] {
+  const taskEntries: CalendarEntry[] = tasks
+    .filter((task) => task.dueDate === value)
+    .map((task) => ({
+      id: "task-" + task.id,
+      title: task.title,
+      date: value,
+      kind: "task",
+      subtitle: task.subject || "Study task",
+      tag: "Planner",
+      completed: task.completed
+    }));
+  const eventEntries: CalendarEntry[] = events
+    .filter((event) => event.yearly ? event.date.slice(5) === value.slice(5) : event.date === value)
+    .map((event) => ({
+      id: event.id,
+      title: event.title,
+      date: value,
+      kind: event.type === "Holiday" ? "holiday" : "event",
+      subtitle: event.details || event.type,
+      tag: event.type,
+      event
+    }));
+  const nationalEntries: CalendarEntry[] = nationalDays
+    .filter((day) => {
+      const month = String(day.month).padStart(2, "0");
+      const date = String(day.day).padStart(2, "0");
+      return value.slice(5) === month + "-" + date;
+    })
+    .map((day) => ({
+      id: "national-" + day.month + "-" + day.day,
+      title: day.title,
+      date: value,
+      kind: "holiday",
+      subtitle: "National observance",
+      tag: "National day"
+    }));
+  return [...taskEntries, ...eventEntries, ...nationalEntries];
+}
+
+export default function Calendar() {
+  const today = dateValue(new Date());
+  const [events, setEvents] = useState<CalendarEvent[]>(readEvents);
+  const [tasks, setTasks] = useState<StudyTask[]>(readTasks);
+  const [selected, setSelected] = useState(today);
+  const [month, setMonth] = useState(() => new Date(new Date().getFullYear(), new Date().getMonth(), 1));
+  const [monthOpen, setMonthOpen] = useState(false);
+  const [view, setView] = useState<ViewMode>("day");
+  const [formOpen, setFormOpen] = useState(false);
+  const [editing, setEditing] = useState<string | null>(null);
+  const [title, setTitle] = useState("");
+  const [date, setDate] = useState(today);
+  const [type, setType] = useState<EventType>("Personal event");
+  const [details, setDetails] = useState("");
+  const [yearly, setYearly] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(EVENT_KEY, JSON.stringify(events));
+    } catch {
+      // Keep the current session usable when browser storage is unavailable.
+    }
+  }, [events]);
+
+  useEffect(() => {
+    const refresh = () => setTasks(readTasks());
+    window.addEventListener("focus", refresh);
+    window.addEventListener("storage", refresh);
+    return () => {
+      window.removeEventListener("focus", refresh);
+      window.removeEventListener("storage", refresh);
+    };
+  }, []);
+
+  const selectedDate = dateObject(selected);
+  const ribbonDays = useMemo(
+    () => Array.from({ length: 15 }, (_, index) => addDays(dateObject(selected), index - 7)),
+    [selected]
+  );
+  const monthGrid = useMemo(() => monthDays(month), [month]);
+  const selectedEntries = useMemo(
+    () => entriesForDate(selected, events, tasks),
+    [selected, events, tasks]
+  );
+  const upcomingDays = useMemo(() => {
+    const result: { date: string; entries: CalendarEntry[] }[] = [];
+    const start = dateObject(today);
+    for (let offset = 1; offset <= 60; offset += 1) {
+      const value = dateValue(addDays(start, offset));
+      const entries = entriesForDate(value, events, tasks);
+      if (entries.length) result.push({ date: value, entries });
+    }
+    return result;
+  }, [events, tasks, today]);
+  const upcomingCount = upcomingDays.reduce((total, day) => total + day.entries.length, 0);
+  const selectedLabel = fullDate(selected);
+  const isToday = selected === today;
+
+  const chooseDate = (value: string) => {
+    setSelected(value);
+    const chosen = dateObject(value);
+    setMonth(new Date(chosen.getFullYear(), chosen.getMonth(), 1));
+  };
+  const changeMonth = (amount: number) => {
+    setMonth((current) => new Date(current.getFullYear(), current.getMonth() + amount, 1));
+  };
+  const goToday = () => {
+    setSelected(today);
+    setMonth(new Date(dateObject(today).getFullYear(), dateObject(today).getMonth(), 1));
+    setView("day");
+    setMonthOpen(false);
+  };
+  const openAdd = (value = selected) => {
+    setEditing(null);
+    setTitle("");
+    setDate(value);
+    setType("Personal event");
+    setDetails("");
+    setYearly(false);
+    setError("");
+    setFormOpen(true);
+  };
+  const editEvent = (event: CalendarEvent) => {
+    setEditing(event.id);
+    setTitle(event.title);
+    setDate(event.date);
+    setType(event.type);
+    setDetails(event.details);
+    setYearly(event.yearly);
+    setError("");
+    setFormOpen(true);
+  };
+  const closeForm = () => {
+    setFormOpen(false);
+    setEditing(null);
+    setError("");
+  };
+  const saveEvent = (event: FormEvent) => {
+    event.preventDefault();
+    if (!title.trim() || !validDate(date)) {
+      setError("Add a title and choose a valid date.");
+      return;
+    }
+    const item: CalendarEvent = {
+      id: editing ?? makeId(),
+      title: title.trim(),
+      date,
+      type,
+      details: details.trim(),
+      yearly: type === "Birthday" && yearly,
+      createdAt: Date.now()
+    };
+    setEvents((current) => editing
+      ? current.map((existing) => existing.id === editing
+        ? { ...item, createdAt: existing.createdAt }
+        : existing)
+      : [item, ...current]
+    );
+    chooseDate(date);
+    setView("day");
+    closeForm();
+  };
+  const removeEvent = (id: string) => {
+    setEvents((current) => current.filter((event) => event.id !== id));
+  };
+
+  const renderEntry = (entry: CalendarEntry) => {
+    const Icon = entry.kind === "task" ? ClipboardList : iconFor(entry.tag);
+    return (
+      <article className={"esscal-entry " + entry.kind + (entry.completed ? " complete" : "")} key={entry.id + "-" + entry.date}>
+        <span className="esscal-entry-mark"><Icon size={17} /></span>
+        <div className="esscal-entry-copy">
+          <strong>{entry.title}</strong>
+          <span>{entry.subtitle}{entry.kind === "task" ? " · Planner" : entry.event?.yearly ? " · Every year" : ""}</span>
+        </div>
+        <span className="esscal-entry-tag">{entry.tag}</span>
+        {entry.completed && <span className="esscal-complete"><Check size={13} /></span>}
+        {entry.event && (
+          <div className="esscal-entry-actions">
+            <button type="button" aria-label="Edit event" onClick={() => editEvent(entry.event!)}><Pencil size={14} /></button>
+            <button type="button" aria-label="Delete event" onClick={() => removeEvent(entry.event!.id)}><Trash2 size={14} /></button>
+          </div>
+        )}
+      </article>
+    );
+  };
+
+  return (
+    <section className="esscal">
+      <header className="esscal-header">
+        <div>
+          <p className="esscal-kicker">MAKE ROOM FOR WHAT MATTERS</p>
+          <h1>Calendar<span>.</span></h1>
+        </div>
+        <div className="esscal-header-actions">
+          <button className="esscal-month-trigger" type="button" onClick={() => setMonthOpen((open) => !open)} aria-expanded={monthOpen}>
+            <CalendarRange size={16} />
+            <span>{monthName(month)}</span>
+            <ChevronDown size={14} className={monthOpen ? "rotated" : ""} />
+          </button>
+          <button className="esscal-add-button" type="button" onClick={() => openAdd()}>
+            <Plus size={17} /><span>Add</span>
+          </button>
+        </div>
+      </header>
+
+      <section className="esscal-date-stage">
+        <div className="esscal-date-copy">
+          <span className="esscal-date-eyebrow">{isToday ? "TODAY" : "YOUR SELECTED DAY"}</span>
+          <div className="esscal-date-line">
+            <strong>{selectedDate.getDate()}</strong>
+            <div>
+              <span>{selectedDate.toLocaleDateString("en-IN", { weekday: "long" })}</span>
+              <b>{selectedDate.toLocaleDateString("en-IN", { month: "long", year: "numeric" })}</b>
+            </div>
+          </div>
+          <p>{selectedEntries.length ? selectedEntries.length + (selectedEntries.length === 1 ? " thing" : " things") + " on your schedule" : "A little room to focus."}</p>
+        </div>
+        <div className="esscal-date-ornament" aria-hidden="true"><span>{selectedDate.toLocaleDateString("en-IN", { weekday: "short" }).toUpperCase()}</span><i /><b>{String(selectedDate.getDate()).padStart(2, "0")}</b></div>
+      </section>
+
+      <nav className="esscal-date-rail" aria-label="Choose a date">
+        {ribbonDays.map((day) => {
+          const value = dateValue(day);
+          const entries = entriesForDate(value, events, tasks);
+          return (
+            <button
+              type="button"
+              key={value}
+              className={"esscal-date-chip" + (value === selected ? " active" : "") + (value === today ? " is-today" : "")}
+              onClick={() => chooseDate(value)}
+              aria-pressed={value === selected}
+            >
+              <span>{day.toLocaleDateString("en-IN", { weekday: "short" })}</span>
+              <strong>{day.getDate()}</strong>
+              <i className={entries.length ? "has-items" : ""} />
+            </button>
+          );
+        })}
+      </nav>
+
+      {monthOpen && (
+        <section className="esscal-month-panel">
+          <div className="esscal-month-panel-head">
+            <button type="button" aria-label="Previous month" onClick={() => changeMonth(-1)}><ChevronLeft size={17} /></button>
+            <strong>{monthName(month)}</strong>
+            <button type="button" aria-label="Next month" onClick={() => changeMonth(1)}><ChevronRight size={17} /></button>
+          </div>
+          <div className="esscal-month-grid">
+            {weekdays.map((day) => <span className="esscal-month-weekday" key={day}>{day.slice(0, 1)}</span>)}
+            {monthGrid.map((day) => {
+              const value = dateValue(day);
+              return (
+                <button
+                  type="button"
+                  key={value}
+                  className={"esscal-month-day" + (day.getMonth() !== month.getMonth() ? " outside" : "") + (value === selected ? " selected" : "") + (value === today ? " today" : "")}
+                  onClick={() => { chooseDate(value); setMonthOpen(false); }}
+                >
+                  {day.getDate()}
+                </button>
+              );
+            })}
+          </div>
+          <div className="esscal-month-panel-foot"><button type="button" onClick={goToday}>Jump to today</button></div>
+        </section>
+      )}
+
+      <div className="esscal-viewbar">
+        <div className="esscal-view-switch" role="tablist" aria-label="Calendar view">
+          <button type="button" role="tab" aria-selected={view === "day"} className={view === "day" ? "active" : ""} onClick={() => setView("day")}>Day view</button>
+          <button type="button" role="tab" aria-selected={view === "upcoming"} className={view === "upcoming" ? "active" : ""} onClick={() => setView("upcoming")}>Coming up <span>{upcomingCount}</span></button>
+        </div>
+        <button type="button" className="esscal-today-link" onClick={goToday}>Today <ChevronRight size={14} /></button>
+      </div>
+
+      {view === "day" ? (
+        <section className="esscal-day-view">
+          <div className="esscal-section-heading">
+            <div><span>THE DAY, UNFOLDED</span><h2>{isToday ? "Your day" : selectedLabel.split(",")[0]}</h2></div>
+            <span className="esscal-section-date">{selectedDate.toLocaleDateString("en-IN", { day: "numeric", month: "short" })}</span>
+          </div>
+          {selectedEntries.length ? (
+            <div className="esscal-timeline">
+              <div className="esscal-timeline-line" />
+              <div className="esscal-timeline-content">{selectedEntries.map(renderEntry)}</div>
+            </div>
+          ) : (
+            <div className="esscal-empty">
+              <span className="esscal-empty-icon"><Sparkles size={19} /></span>
+              <div><strong>Nothing competing for your attention.</strong><p>Keep this space open, or add something worth remembering.</p></div>
+              <button type="button" onClick={() => openAdd(selected)}><Plus size={15} /> Add a date</button>
+            </div>
+          )}
+          {selected !== today && <button type="button" className="esscal-back-today" onClick={goToday}>Back to today</button>}
+        </section>
+      ) : (
+        <section className="esscal-upcoming-view">
+          <div className="esscal-section-heading">
+            <div><span>THE NEXT 60 DAYS</span><h2>Coming up</h2></div>
+            <span className="esscal-section-date">{upcomingCount} dates</span>
+          </div>
+          {upcomingDays.length ? (
+            <div className="esscal-upcoming-list">
+              {upcomingDays.map((day) => (
+                <section className="esscal-upcoming-day" key={day.date}>
+                  <button type="button" className="esscal-upcoming-date" onClick={() => { chooseDate(day.date); setView("day"); }}>
+                    <strong>{dateObject(day.date).getDate()}</strong>
+                    <span>{dateObject(day.date).toLocaleDateString("en-IN", { weekday: "short", month: "short" })}</span>
+                    <ChevronRight size={15} />
+                  </button>
+                  <div className="esscal-upcoming-entries">{day.entries.map(renderEntry)}</div>
+                </section>
+              ))}
+            </div>
+          ) : (
+            <div className="esscal-empty">
+              <span className="esscal-empty-icon"><Sparkles size={19} /></span>
+              <div><strong>Your next 60 days look clear.</strong><p>New tasks, birthdays and important dates will appear here.</p></div>
+              <button type="button" onClick={() => openAdd(today)}><Plus size={15} /> Add a date</button>
+            </div>
+          )}
+        </section>
+      )}
+
+      {formOpen && (
+        <div className="esscal-modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) closeForm(); }}>
+          <form className="esscal-form" onSubmit={saveEvent}>
+            <div className="esscal-form-head">
+              <div><span>{editing ? "EDIT A DATE" : "SAVE A DATE"}</span><h2>{editing ? "Update details" : "What should we remember?"}</h2></div>
+              <button type="button" aria-label="Close" onClick={closeForm}><X size={18} /></button>
+            </div>
+            <label className="esscal-field"><span>Title</span><input autoFocus value={title} onChange={(event) => setTitle(event.target.value)} placeholder="e.g. Birthday, school event..." maxLength={80} /></label>
+            <div className="esscal-form-row">
+              <label className="esscal-field"><span>Date</span><input type="date" value={date} onChange={(event) => setDate(event.target.value)} /></label>
+              <label className="esscal-field"><span>Type</span><select value={type} onChange={(event) => { setType(event.target.value as EventType); if (event.target.value !== "Birthday") setYearly(false); }}>{eventTypes.map((eventType) => <option key={eventType}>{eventType}</option>)}</select></label>
+            </div>
+            <label className="esscal-field"><span>Notes <small>Optional</small></span><textarea value={details} onChange={(event) => setDetails(event.target.value)} rows={2} maxLength={200} placeholder="A detail to remember" /></label>
+            {type === "Birthday" && <label className="esscal-repeat"><input type="checkbox" checked={yearly} onChange={(event) => setYearly(event.target.checked)} /> Repeat every year</label>}
+            {error && <p className="esscal-error">{error}</p>}
+            <div className="esscal-form-footer"><button type="button" onClick={closeForm}>Cancel</button><button type="submit">{editing ? "Save changes" : "Save date"}</button></div>
+          </form>
+        </div>
+      )}
+    </section>
+  );
 }
