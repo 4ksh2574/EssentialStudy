@@ -17,6 +17,7 @@ type StudyTask = {
   createdAt: number;
 };
 type FilterKey = "All" | "Today" | "Upcoming" | "Completed";
+type SortKey = "priority" | "dueDate" | "createdAt" | "subject";
 type Props = { subjects: string[] };
 
 const STORAGE_KEY = "essentialstudy.tasks";
@@ -65,6 +66,7 @@ function formatDueDate(value: string) {
 export default function Planner({ subjects }: Props) {
   const [tasks, setTasks] = useState<StudyTask[]>(readTasks);
   const [filter, setFilter] = useState<FilterKey>("All");
+  const [sortBy, setSortBy] = useState<SortKey>("priority");
   const [query, setQuery] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
