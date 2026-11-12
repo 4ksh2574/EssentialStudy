@@ -57,6 +57,7 @@ export default function Syllabus({ subjects }: Props) {
   const [active, setActive] = useState<string | null>(null);
   const [draft, setDraft] = useState("");
   const [dragging, setDragging] = useState<string | null>(null);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const gesture = useRef<Gesture | null>(null);
   const suppressOpen = useRef(false);
   const gridRef = useRef<HTMLDivElement>(null);
@@ -133,6 +134,7 @@ export default function Syllabus({ subjects }: Props) {
       const rows = Math.max(2, Math.min(7, current.rows + Math.round(dy / (rowHeight + rowGap))));
       setFolderSizes(previous => ({ ...previous, [current.subject]: { cols, rows } }));
     } else if (current.kind === "move") {
+      setDragOffset({ x: dx, y: dy });
       const target = document.elementFromPoint(event.clientX, event.clientY)?.closest<HTMLElement>("[data-subject]");
       current.over = target?.dataset.subject ?? current.subject;
     }
@@ -158,6 +160,7 @@ export default function Syllabus({ subjects }: Props) {
     if (current.kind === "move" && current.moved) suppressOpen.current = true;
     gesture.current = null;
     setDragging(null);
+    setDragOffset({ x: 0, y: 0 });
   };
 
   if (!subjects.length) {
@@ -180,7 +183,7 @@ export default function Syllabus({ subjects }: Props) {
             className={`syllabus-folder${dragging === subject ? " is-dragging" : ""}`}
             key={subject}
             data-subject={subject}
-            style={{ gridColumn: `span ${size.cols}`, gridRow: `span ${size.rows}` }}
+            style={{ gridColumn: `span ${size.cols}`, gridRow: `span ${size.rows}`, transform: dragging === subject ? `translate3d(${dragOffset.x}px, ${dragOffset.y}px, 0) scale(1.02)` : undefined }}
           >
             <button className="syllabus-folder-move" onPointerDown={event => startGesture("move", subject, event)} aria-label={`Move ${subject} folder`} title="Drag to move"><GripVertical size={15} /></button>
             <button className="syllabus-folder-open" onClick={() => { if (suppressOpen.current) { suppressOpen.current = false; return; } setActive(subject); }} aria-label={`Open ${subject} folder`}>
