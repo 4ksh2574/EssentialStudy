@@ -161,37 +161,66 @@ button:focus-visible,a:focus-visible{outline:3px solid rgba(23,139,120,.35);outl
  .planner-sort select{max-width:100px}
 }
 
-/* Minimal syllabus module */
-.syllabus-page{max-width:900px;margin:0 auto}
-.syllabus-heading{margin-bottom:25px}
-.syllabus-heading h1{font:800 clamp(34px,4vw,46px)/1.1 Manrope,sans-serif;letter-spacing:-2px;color:#203a34;margin:0}
+/* Syllabus — subject folders and chapter progress */
+.syllabus-page{max-width:940px;margin:0 auto}
+.syllabus-heading{margin-bottom:27px}
+.syllabus-heading h1{font:800 clamp(34px,4vw,46px)/1.1 Manrope,sans-serif;letter-spacing:-1.8px;color:#203a34;margin:0}
 .syllabus-heading h1 span{color:#29977e}
 .syllabus-muted{font-size:12px;color:#84928d;margin:9px 0 0}
-.syllabus-subjects{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}
-.syllabus-subject{border:1px solid var(--line);border-radius:99px;padding:9px 14px;background:rgba(255,255,255,.55);color:#74877e;font:600 11px 'DM Sans',sans-serif;cursor:pointer}
-.syllabus-subject.active{background:#e1f2e9;border-color:rgba(42,142,111,.16);color:#187963}
-.syllabus-progress{padding:17px 19px;border:1px solid var(--line);border-radius:17px;background:rgba(255,255,255,.6);margin-bottom:14px}
-.syllabus-progress>div:first-child{display:flex;justify-content:space-between;gap:12px;margin-bottom:12px}
-.syllabus-progress strong{font:700 13px Manrope;color:#29483e}
-.syllabus-progress span{font-size:10px;color:#91a098}
+.syllabus-back{display:inline-flex;align-items:center;gap:7px;border:0;background:transparent;color:#648176;font-size:11px;font-weight:700;padding:0;margin:0 0 22px;cursor:pointer}
+.syllabus-folder-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.syllabus-folder{min-width:0;text-align:left;padding:19px;border:1px solid var(--line);border-radius:19px;background:rgba(255,255,255,.62);color:var(--ink);cursor:pointer;transition:transform .2s,border-color .2s,background .2s}
+.syllabus-folder:hover{transform:translateY(-2px);border-color:rgba(41,151,126,.28);background:rgba(255,255,255,.86)}
+.syllabus-folder-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.syllabus-folder-icon{width:39px;height:39px;border-radius:13px;background:#e2f3ea;color:#23866f;display:grid;place-items:center}
+.syllabus-folder-arrow{color:#9aaba2}
+.syllabus-folder>strong{display:block;font:700 15px Manrope;color:#29483e;overflow-wrap:anywhere}
+.syllabus-folder-meta{display:block;margin-top:6px;color:#91a098;font-size:10px}
+.syllabus-folder-track{height:5px;border-radius:20px;background:rgba(45,123,96,.1);overflow:hidden;margin-top:17px}
+.syllabus-folder-track span{display:block;height:100%;border-radius:20px;background:#29977e;transition:width .25s}
+.syllabus-folder-percent{display:block;margin-top:8px;color:#6d9583;font-size:9px;font-weight:700}
+.syllabus-subject-summary{display:flex;align-items:center;gap:22px;padding:16px 18px;border:1px solid var(--line);border-radius:17px;background:rgba(255,255,255,.58);margin-bottom:17px}
+.syllabus-subject-summary>div:not(.syllabus-subject-progress){display:grid;gap:3px}
+.syllabus-subject-summary>div>strong{font:700 18px Manrope;color:#29483e}
+.syllabus-subject-summary>div>span{font-size:9px;color:#91a098}
+.syllabus-subject-progress{flex:1;min-width:90px;margin-left:auto}
+.syllabus-subject-progress>div:first-child{display:flex;justify-content:space-between;gap:10px;margin-bottom:8px}
+.syllabus-subject-progress>div:first-child span{font-size:9px;color:#91a098}
+.syllabus-subject-progress>div:first-child strong{font:700 11px Manrope;color:#29977e}
 .syllabus-progress-track{height:6px;border-radius:20px;background:rgba(45,123,96,.1);overflow:hidden}
 .syllabus-progress-track span{display:block;height:100%;border-radius:20px;background:#29977e;transition:width .2s}
 .syllabus-add{display:flex;gap:8px;margin-bottom:12px}
 .syllabus-add input{flex:1;min-width:0;height:43px;border:1px solid var(--line);border-radius:13px;background:rgba(255,255,255,.62);padding:0 13px;color:var(--ink);font:11px 'DM Sans',sans-serif;outline:none}
+.syllabus-add input:focus{border-color:rgba(41,151,126,.5)}
 .syllabus-add button{width:43px;border:0;border-radius:13px;background:#dff1e8;color:#23866f;display:grid;place-items:center;cursor:pointer}
 .syllabus-add button:disabled{opacity:.45;cursor:default}
 .syllabus-chapters{display:grid;gap:8px}
-.syllabus-chapter{display:flex;align-items:center;gap:12px;padding:13px 15px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.62);color:#38564a;font-size:12px}
-.syllabus-chapter>span{flex:1;min-width:0;overflow-wrap:anywhere}
-.syllabus-chapter.done>span{text-decoration:line-through;color:#9aa9a1}
-.syllabus-check,.syllabus-delete{width:29px;height:29px;flex:none;border:0;border-radius:9px;background:transparent;color:#8fa398;display:grid;place-items:center;cursor:pointer}
-.syllabus-chapter.done .syllabus-check{background:#29977e;color:white}
+.syllabus-chapter{display:flex;align-items:center;gap:12px;padding:13px 14px;border:1px solid var(--line);border-radius:15px;background:rgba(255,255,255,.62);color:#38564a;min-width:0}
+.syllabus-chapter-number{font:700 10px Manrope;color:#a0b1a7;min-width:21px}
+.syllabus-chapter-main{flex:1;min-width:0;display:grid;gap:5px}
+.syllabus-chapter-main>strong{font-size:11px;color:#38564a;overflow-wrap:anywhere}
+.syllabus-chapter-status{display:flex;align-items:center;gap:4px;font-size:9px;color:#8a9c92}
+.syllabus-chapter.done .syllabus-chapter-status{color:#25876f}
+.syllabus-status-select{max-width:155px;height:34px;border:1px solid var(--line);border-radius:10px;background:rgba(247,251,248,.9);padding:0 8px;color:#5c786b;font:600 9px 'DM Sans',sans-serif;outline:none}
+.syllabus-delete{width:30px;height:30px;flex:none;border:0;border-radius:9px;background:transparent;color:#9aa9a1;display:grid;place-items:center;cursor:pointer}
 .syllabus-delete:hover{background:#f8e9e5;color:#b87362}
-.syllabus-empty{min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border:1px dashed rgba(54,125,99,.18);border-radius:17px;color:#8da096}
+.syllabus-empty{min-height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border:1px dashed rgba(54,125,99,.18);border-radius:17px;color:#8da096}
 .syllabus-empty strong{font:700 12px Manrope;color:#536e62}
 .syllabus-empty span{font-size:10px}
-.dark .syllabus-heading h1,.dark .syllabus-progress strong{color:#e2eee8}
-.dark .syllabus-subject,.dark .syllabus-progress,.dark .syllabus-add input,.dark .syllabus-chapter{background:rgba(255,255,255,.045);color:#dcebe3}
-.dark .syllabus-subject.active{background:rgba(51,135,109,.22);color:#8bd9b9}
-.dark .syllabus-muted,.dark .syllabus-progress span{color:#9aada4}
-@media(max-width:640px){.syllabus-heading{margin-bottom:20px}.syllabus-subjects{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}.syllabus-subject{white-space:nowrap}.syllabus-progress{padding:14px}}
+.dark .syllabus-heading h1,.dark .syllabus-subject-summary>div>strong{color:#e2eee8}
+.dark .syllabus-folder,.dark .syllabus-subject-summary,.dark .syllabus-add input,.dark .syllabus-chapter{background:rgba(255,255,255,.045);color:#dcebe3}
+.dark .syllabus-folder>strong,.dark .syllabus-chapter-main>strong{color:#e0eee7}
+.dark .syllabus-muted,.dark .syllabus-folder-meta,.dark .syllabus-subject-summary>div>span{color:#9aada4}
+.dark .syllabus-status-select{background:#263b33;color:#dcebe3;border-color:rgba(255,255,255,.1)}
+.dark .syllabus-back{color:#a3b9ad}
+@media(max-width:640px){
+ .syllabus-heading{margin-bottom:21px}
+ .syllabus-folder-grid{grid-template-columns:1fr;gap:9px}
+ .syllabus-folder{padding:15px 16px}
+ .syllabus-folder-top{margin-bottom:12px}
+ .syllabus-subject-summary{gap:14px;padding:13px}
+ .syllabus-status-select{max-width:125px;font-size:8px;padding:0 5px}
+ .syllabus-chapter{gap:8px;padding:11px 9px}
+ .syllabus-chapter-number{min-width:18px}
+ .syllabus-delete{width:26px}
+}
