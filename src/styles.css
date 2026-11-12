@@ -282,3 +282,41 @@ button:focus-visible,a:focus-visible{outline:3px solid rgba(23,139,120,.35);outl
  .syllabus-folder-move{right:7px;top:7px}
  .syllabus-folder-resize{right:7px;bottom:7px;width:25px;height:25px}
 }
+
+
+/* Syllabus: low-motion, touch-first editing */
+.syllabus-heading-row{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.syllabus-edit-toggle{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:38px;padding:0 13px;border:1px solid var(--line);border-radius:13px;background:rgba(255,255,255,.68);color:#527568;font:600 11px 'DM Sans',sans-serif;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .12s,border-color .12s}
+.syllabus-edit-toggle.is-active{background:#dff1e8;border-color:rgba(41,151,126,.28);color:#23866f}
+.dark .syllabus-edit-toggle{background:rgba(255,255,255,.06);color:#b5cabe;border-color:rgba(255,255,255,.1)}
+.dark .syllabus-edit-toggle.is-active{background:rgba(41,151,126,.2);color:#9cdec2}
+.syllabus-folder-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-auto-rows:40px;grid-auto-flow:row;gap:10px;align-items:stretch}
+.syllabus-folder{position:relative;display:flex;min-width:0;min-height:0;height:auto;padding:16px 17px 14px;border:1px solid var(--line);border-radius:20px;background:rgba(255,255,255,.62);color:var(--ink);overflow:hidden;transition:border-color .12s,background .12s,box-shadow .12s;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+.syllabus-folder:hover{transform:none;border-color:var(--line);background:rgba(255,255,255,.62)}
+.dark .syllabus-folder:hover{background:rgba(255,255,255,.045)}
+.syllabus-folder-open{display:flex;flex:1;flex-direction:column;align-items:stretch;justify-content:flex-start;min-width:0;width:100%;height:100%;padding:0 27px 0 0;border:0;background:transparent;color:inherit;text-align:left;cursor:pointer;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+.syllabus-folder-open:focus:not(:focus-visible){outline:none;box-shadow:none}
+.syllabus-folder-open:focus-visible{outline:2px solid rgba(41,151,126,.55);outline-offset:2px}
+.syllabus-folder-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+.syllabus-folder-arrow{position:absolute;right:15px;top:24px;color:#9aaba2}
+.syllabus-folder-track{margin-top:auto}
+.syllabus-folder-grid.edit-mode .syllabus-folder{cursor:grab;touch-action:none;border-color:rgba(41,151,126,.2);background:rgba(245,251,247,.82)}
+.syllabus-folder-grid.edit-mode .syllabus-folder:active{cursor:grabbing}
+.syllabus-folder-grid.edit-mode .syllabus-folder-open{pointer-events:none}
+.syllabus-folder.is-dragging{z-index:5;opacity:.9;box-shadow:0 12px 28px rgba(24,90,70,.16);border-color:rgba(41,151,126,.58)}
+.syllabus-folder.drop-target{outline:2px solid rgba(41,151,126,.48);outline-offset:2px;background:rgba(223,241,232,.82)}
+.syllabus-folder-resize{position:absolute;right:0;bottom:0;z-index:3;width:48px;height:48px;display:grid;place-items:center;padding:0;border:0;border-radius:19px 0 0 0;background:transparent;cursor:nwse-resize;touch-action:none;-webkit-tap-highlight-color:transparent}
+.syllabus-cotton-grip{position:absolute;right:5px;bottom:5px;width:34px;height:34px;border:1px solid rgba(90,143,119,.14);border-radius:13px 5px 15px 5px;background:linear-gradient(145deg,rgba(255,255,255,.96),rgba(220,240,229,.92));box-shadow:0 2px 7px rgba(52,103,80,.11),inset 0 1px 1px rgba(255,255,255,.95);overflow:hidden}
+.syllabus-cotton-grip:before{content:"";position:absolute;inset:8px;border-radius:7px;background:repeating-linear-gradient(135deg,rgba(104,151,126,.42) 0 1.5px,transparent 1.5px 4px);opacity:.8}
+.syllabus-cotton-grip:after{content:"";position:absolute;inset:2px;border-radius:11px 4px 13px 4px;border-top:1px solid rgba(255,255,255,.95);border-left:1px solid rgba(255,255,255,.7);pointer-events:none}
+.syllabus-folder-resize:active .syllabus-cotton-grip{transform:scale(.94);background:linear-gradient(145deg,#e6f5ed,#cce8d9)}
+.dark .syllabus-folder-grid.edit-mode .syllabus-folder{background:rgba(255,255,255,.065);border-color:rgba(113,183,151,.2)}
+.dark .syllabus-folder.drop-target{background:rgba(41,151,126,.18)}
+.dark .syllabus-cotton-grip{background:linear-gradient(145deg,rgba(72,101,87,.98),rgba(43,68,56,.98));border-color:rgba(190,222,204,.2);box-shadow:0 2px 7px rgba(0,0,0,.2),inset 0 1px 1px rgba(255,255,255,.12)}
+.dark .syllabus-cotton-grip:before{background:repeating-linear-gradient(135deg,rgba(190,222,204,.48) 0 1.5px,transparent 1.5px 4px)}
+@media(max-width:640px){
+ .syllabus-folder-grid{grid-template-columns:repeat(12,minmax(0,1fr));grid-auto-rows:38px;gap:9px}
+ .syllabus-folder{padding:14px 14px 12px;border-radius:17px}
+ .syllabus-folder-resize{width:45px;height:45px}
+ .syllabus-cotton-grip{width:32px;height:32px}
+}
