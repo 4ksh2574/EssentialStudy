@@ -1,14 +1,15 @@
-import { useEffect, useMemo, useState, type FormEvent } from "react";
-import { ArrowLeft, BookOpen, Check, ChevronRight, Folder, Grip, Plus, Trash2 } from "lucide-react";
+import { useEffect, useMemo, useRef, useState, type FormEvent, type PointerEvent as ReactPointerEvent } from "react";
+import { ArrowLeft, BookOpen, Check, ChevronRight, Folder, Grip, GripVertical, Plus, Trash2 } from "lucide-react";
 
 type ChapterStatus = "Not started" | "Partially complete" | "Basics complete" | "Theory complete" | "Numericals complete" | "Fully complete";
 type Chapter = { id: string; title: string; status: ChapterStatus };
-type FolderSize = "small" | "medium" | "large";
+type FolderLayout = { cols: number; rows: number };
+type Gesture = { kind: "resize" | "move"; subject: string; pointerId: number; x: number; y: number; cols: number; rows: number; moved: boolean; over: string | null };
 type Props = { subjects: string[] };
 const KEY = "essentialstudy.syllabus";
-const SIZE_KEY = "essentialstudy.syllabus.folderSizes";
+const LAYOUT_KEY = "essentialstudy.syllabus.folderLayout";
 const STATUSES: ChapterStatus[] = ["Not started", "Partially complete", "Basics complete", "Theory complete", "Numericals complete", "Fully complete"];
-const SIZES: FolderSize[] = ["small", "medium", "large"];
+const DEFAULT_LAYOUT: FolderLayout = { cols: 6, rows: 3 };
 
 function readSyllabus(): Record<string, Chapter[]> {
   try {
@@ -26,13 +27,19 @@ function readSyllabus(): Record<string, Chapter[]> {
   } catch { return {}; }
 }
 
-function readFolderSizes(): Record<string, FolderSize> {
+function readFolderLayout(): { sizes: Record<string, FolderLayout>; order: string[] } {
   try {
-    const raw = localStorage.getItem(SIZE_KEY);
-    if (!raw) return {};
-    const parsed = JSON.parse(raw) as Record<string, FolderSize>;
-    return Object.fromEntries(Object.entries(parsed).filter(([, size]) => SIZES.includes(size)));
-  } catch { return {}; }
+    const raw = localStorage.getItem(LAYOUT_KEY);
+    if (!raw) return { sizes: {}, order: [] };
+    const parsed = JSON.parse(raw) as { sizes?: Record<string, FolderLayout>; order?: string[] };
+    const sizes = Object.fromEntries(Object.entries(parsed.sizes ?? {}).filter(([, value]) =>
+      value && Number.isFinite(value.cols) && Number.isFinite(value.rows)
+    ).map(([subject, value]) => [subject, {
+      cols: Math.max(3, Math.min(12, Math.round(value.cols))),
+      rows: Math.max(2, Math.min(7, Math.round(value.rows)))
+    }]));
+    return { sizes, order: Array.isArray(parsed.order) ? parsed.order.filter(item => typeof item === "string") : [] };
+  } catch { return { sizes: {}, order: [] }; }
 }
 
 function progressValue(status: ChapterStatus) {
@@ -43,21 +50,27 @@ function progressValue(status: ChapterStatus) {
 }
 
 export default function Syllabus({ subjects }: Props) {
+  const initialLayout = useRef(readFolderLayout());
   const [chapters, setChapters] = useState<Record<string, Chapter[]>>(readSyllabus);
-  const [folderSizes, setFolderSizes] = useState<Record<string, FolderSize>>(readFolderSizes);
+  const [folderSizes, setFolderSizes] = useState<Record<string, FolderLayout>>(initialLayout.current.sizes);
+  const [folderOrder, setFolderOrder] = useState<string[]>(initialLayout.current.order);
   const [active, setActive] = useState<string | null>(null);
   const [draft, setDraft] = useState("");
+  const [dragging, setDragging] = useState<string | null>(null);
+  const gesture = useRef<Gesture | null>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     try { localStorage.setItem(KEY, JSON.stringify(chapters)); } catch { /* Keep this session usable. */ }
   }, [chapters]);
 
   useEffect(() => {
-    try { localStorage.setItem(SIZE_KEY, JSON.stringify(folderSizes)); } catch { /* Keep this session usable. */ }
-  }, [folderSizes]);
+    try { localStorage.setItem(LAYOUT_KEY, JSON.stringify({ sizes: folderSizes, order: folderOrder })); } catch { /* Keep this session usable. */ }
+  }, [folderSizes, folderOrder]);
 
   useEffect(() => {
     if (active && !subjects.includes(active)) setActive(null);
+    setFolderOrder(current => current.filter(item => subjects.includes(item)));
   }, [subjects, active]);
 
   const subjectStats = useMemo(() => subjects.map(subject => {
@@ -65,6 +78,11 @@ export default function Syllabus({ subjects }: Props) {
     const average = items.length ? Math.round(items.reduce((sum, item) => sum + progressValue(item.status), 0) / items.length) : 0;
     return { subject, total: items.length, completed: items.filter(item => item.status === "Fully complete").length, average };
   }), [subjects, chapters]);
+
+  const orderedStats = useMemo(() => {
+    const rank = new Map(folderOrder.map((subject, index) => [subject, index]));
+    return [...subjectStats].sort((a, b) => (rank.get(a.subject) ?? Number.MAX_SAFE_INTEGER) - (rank.get(b.subject) ?? Number.MAX_SAFE_INTEGER));
+  }, [subjectStats, folderOrder]);
 
   const activeItems = active ? chapters[active] ?? [] : [];
   const totalProgress = activeItems.length ? Math.round(activeItems.reduce((sum, item) => sum + progressValue(item.status), 0) / activeItems.length) : 0;
@@ -88,12 +106,54 @@ export default function Syllabus({ subjects }: Props) {
     setChapters(current => ({ ...current, [active]: (current[active] ?? []).filter(chapter => chapter.id !== id) }));
   };
 
-  const cycleFolderSize = (subject: string) => {
-    setFolderSizes(current => {
-      const currentSize = current[subject] ?? "small";
-      const nextSize = SIZES[(SIZES.indexOf(currentSize) + 1) % SIZES.length];
-      return { ...current, [subject]: nextSize };
-    });
+  const startGesture = (kind: Gesture["kind"], subject: string, event: ReactPointerEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const current = folderSizes[subject] ?? DEFAULT_LAYOUT;
+    gesture.current = { kind, subject, pointerId: event.pointerId, x: event.clientX, y: event.clientY, cols: current.cols, rows: current.rows, moved: false, over: subject };
+    event.currentTarget.setPointerCapture(event.pointerId);
+    if (kind === "move") setDragging(subject);
+  };
+
+  const moveGesture = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const current = gesture.current;
+    if (!current || current.pointerId !== event.pointerId) return;
+    const dx = event.clientX - current.x;
+    const dy = event.clientY - current.y;
+    if (Math.abs(dx) + Math.abs(dy) > 5) current.moved = true;
+
+    if (current.kind === "resize" && gridRef.current) {
+      const cellWidth = gridRef.current.getBoundingClientRect().width / 12;
+      const colGap = 12;
+      const rowUnit = 44 + 12;
+      const cols = Math.max(3, Math.min(12, current.cols + Math.round(dx / (cellWidth + colGap))));
+      const rows = Math.max(2, Math.min(7, current.rows + Math.round(dy / rowUnit)));
+      setFolderSizes(previous => ({ ...previous, [current.subject]: { cols, rows } }));
+    } else if (current.kind === "move") {
+      const target = document.elementFromPoint(event.clientX, event.clientY)?.closest<HTMLElement>("[data-subject]");
+      current.over = target?.dataset.subject ?? current.subject;
+    }
+  };
+
+  const endGesture = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const current = gesture.current;
+    if (!current || current.pointerId !== event.pointerId) return;
+    if (current.kind === "move" && current.moved && current.over && current.over !== current.subject) {
+      setFolderOrder(previous => {
+        const all = [...subjects].sort((a, b) => {
+          const ai = previous.indexOf(a), bi = previous.indexOf(b);
+          return (ai < 0 ? Number.MAX_SAFE_INTEGER : ai) - (bi < 0 ? Number.MAX_SAFE_INTEGER : bi);
+        });
+        const from = all.indexOf(current.subject);
+        const to = all.indexOf(current.over!);
+        if (from < 0 || to < 0) return previous;
+        all.splice(from, 1);
+        all.splice(to, 0, current.subject);
+        return all;
+      });
+    }
+    gesture.current = null;
+    setDragging(null);
   };
 
   if (!subjects.length) {
@@ -109,19 +169,24 @@ export default function Syllabus({ subjects }: Props) {
     </div>
 
     {!active ? (
-      <div className="syllabus-folder-grid">
-        {subjectStats.map(({ subject, total, completed, average }) => {
-          const size = folderSizes[subject] ?? "small";
-          const nextSize = SIZES[(SIZES.indexOf(size) + 1) % SIZES.length];
-          return <article className={`syllabus-folder size-${size}`} key={subject}>
-            <button className="syllabus-folder-open" onClick={() => setActive(subject)} aria-label={`Open ${subject} folder`}>
+      <div className="syllabus-folder-grid" ref={gridRef} onPointerMove={moveGesture} onPointerUp={endGesture} onPointerCancel={endGesture}>
+        {orderedStats.map(({ subject, total, completed, average }) => {
+          const size = folderSizes[subject] ?? DEFAULT_LAYOUT;
+          return <article
+            className={`syllabus-folder${dragging === subject ? " is-dragging" : ""}`}
+            key={subject}
+            data-subject={subject}
+            style={{ gridColumn: `span ${size.cols}`, gridRow: `span ${size.rows}` }}
+          >
+            <button className="syllabus-folder-move" onPointerDown={event => startGesture("move", subject, event)} aria-label={`Move ${subject} folder`} title="Drag to move"><GripVertical size={15} /></button>
+            <button className="syllabus-folder-open" onClick={() => { if (!gesture.current?.moved) setActive(subject); }} aria-label={`Open ${subject} folder`}>
               <span className="syllabus-folder-top"><span className="syllabus-folder-icon"><Folder size={21} /></span><ChevronRight size={17} className="syllabus-folder-arrow" /></span>
               <strong>{subject}</strong>
               <span className="syllabus-folder-meta">{total} {total === 1 ? "chapter" : "chapters"} · {completed} completed</span>
               <span className="syllabus-folder-track"><span style={{ width: average + "%" }} /></span>
               <span className="syllabus-folder-percent">{average}% covered</span>
             </button>
-            <button className="syllabus-folder-resize" onClick={() => cycleFolderSize(subject)} aria-label={`Resize ${subject} folder, currently ${size}, next size ${nextSize}`} title={`Size: ${size}. Tap to change to ${nextSize}.`}><Grip size={15} /></button>
+            <button className="syllabus-folder-resize" onPointerDown={event => startGesture("resize", subject, event)} aria-label={`Resize ${subject} folder`} title="Drag to resize"><Grip size={15} /></button>
           </article>;
         })}
       </div>
