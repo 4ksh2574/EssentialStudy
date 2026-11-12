@@ -124,11 +124,13 @@ export default function Syllabus({ subjects }: Props) {
     if (Math.abs(dx) + Math.abs(dy) > 5) current.moved = true;
 
     if (current.kind === "resize" && gridRef.current) {
-      const cellWidth = gridRef.current.getBoundingClientRect().width / 12;
-      const colGap = 12;
-      const rowUnit = 44 + 12;
-      const cols = Math.max(3, Math.min(12, current.cols + Math.round(dx / (cellWidth + colGap))));
-      const rows = Math.max(2, Math.min(7, current.rows + Math.round(dy / rowUnit)));
+      const style = window.getComputedStyle(gridRef.current);
+      const gap = Number.parseFloat(style.columnGap) || 0;
+      const rowGap = Number.parseFloat(style.rowGap) || 0;
+      const rowHeight = Number.parseFloat(style.gridAutoRows) || 44;
+      const cellWidth = (gridRef.current.getBoundingClientRect().width - gap * 11) / 12;
+      const cols = Math.max(3, Math.min(12, current.cols + Math.round(dx / (cellWidth + gap))));
+      const rows = Math.max(2, Math.min(7, current.rows + Math.round(dy / (rowHeight + rowGap))));
       setFolderSizes(previous => ({ ...previous, [current.subject]: { cols, rows } }));
     } else if (current.kind === "move") {
       const target = document.elementFromPoint(event.clientX, event.clientY)?.closest<HTMLElement>("[data-subject]");
