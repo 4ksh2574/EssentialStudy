@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Onboarding, { type StudentProfile } from "./components/Onboarding";
 import Planner from "./components/Planner";
 import Syllabus from "./components/Syllabus";
@@ -34,8 +34,25 @@ function App() {
     }
   });
   const [section, setSection] = useState<Section>("Home");
-  const [dark, setDark] = useState(false);
+  const [dark, setDark] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem("essentialstudy.theme") === "dark";
+    } catch {
+      return false;
+    }
+  });
   const [completed, setCompleted] = useState<string[]>(["Complete motion worksheet"]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("essentialstudy.theme", dark ? "dark" : "light");
+    } catch {
+      // Keep the selected theme for this session if storage is unavailable.
+    }
+
+    const themeColor = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+    themeColor?.setAttribute("content", dark ? "#101b19" : "#edf7f4");
+  }, [dark]);
 
   const toggleTask = (title: string) => {
     setCompleted((current) =>
@@ -66,7 +83,7 @@ function App() {
         </a>
         <div className="top-actions">
           <button className="icon-button" aria-label="Search"><Search size={18} /></button>
-          <button className="icon-button" aria-label="Toggle theme" onClick={() => setDark(!dark)}>
+          <button className="icon-button" aria-label="Toggle theme" onClick={() => setDark((current) => !current)}>
             {dark ? <Sun size={18} /> : <Moon size={18} />}
           </button>
           <button className="profile-chip" aria-label="Profile and settings"><span>{profile.name.slice(0, 1).toUpperCase()}</span></button>
