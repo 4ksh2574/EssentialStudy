@@ -57,6 +57,10 @@ export default function Syllabus({ subjects }: Props) {
     try { localStorage.setItem(KEY, JSON.stringify(chapters)); } catch { /* Keep this session usable. */ }
   }, [chapters]);
 
+  useEffect(() => {
+    if (active && !subjects.includes(active)) setActive(null);
+  }, [subjects, active]);
+
   const subjectStats = useMemo(() => subjects.map(subject => {
     const items = chapters[subject] ?? [];
     const average = items.length
@@ -105,7 +109,6 @@ export default function Syllabus({ subjects }: Props) {
     </section>;
   }
 
-  if (active && !subjects.includes(active)) setActive(null);
 
   return <section className="syllabus-page">
     <div className="syllabus-heading">
