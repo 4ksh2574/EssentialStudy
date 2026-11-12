@@ -173,15 +173,7 @@ function App() {
                     })}
                   </div>
                 </>
-              ) : (
-                <div className="empty-section">
-                  <span className="empty-icon"><CalendarDays /></span>
-                  <p className="eyebrow">ESSENTIALSTUDY / {section.toUpperCase()}</p>
-                  <h1>{section}</h1>
-                  <p>This space is being prepared. We'll build and test this module before moving to the next one.</p>
-                  <button className="primary-button" onClick={() => setSection("Home")}>Back to overview <ChevronRight size={16} /></button>
-                </div>
-              )}
+              ) : null
             </motion.div>
         </section>
       </div>
