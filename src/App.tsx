@@ -6,14 +6,15 @@ import Calendar from "./components/Calendar";
 import Timetable from "./components/Timetable";
 import Notes from "./components/Notes";
 import Exams from "./components/Exams";
+import Analytics from "./components/Analytics";
 import { motion } from "motion/react";
 import {
   BookOpen, BookOpenText, CalendarDays, Check, ChevronRight, CircleHelp,
-  Clock3, ClipboardList, GraduationCap, LayoutDashboard, ListTodo, Moon,
+  Clock3, ClipboardList, BarChart3, GraduationCap, LayoutDashboard, ListTodo, Moon,
   Plus, Search, Settings2, Sparkles, Sun, Target
 } from "lucide-react";
 
-type Section = "Home" | "Planner" | "Syllabus" | "Calendar" | "Timetable" | "Notes" | "Exams";
+type Section = "Home" | "Planner" | "Syllabus" | "Calendar" | "Timetable" | "Notes" | "Exams" | "Analytics";
 
 const navItems = [
   { label: "Home" as const, icon: LayoutDashboard },
@@ -22,7 +23,8 @@ const navItems = [
   { label: "Calendar" as const, icon: CalendarDays },
   { label: "Timetable" as const, icon: Clock3 },
   { label: "Notes" as const, icon: BookOpenText },
-  { label: "Exams" as const, icon: ClipboardList }
+  { label: "Exams" as const, icon: ClipboardList },
+  { label: "Analytics" as const, icon: BarChart3 }
 ];
 
 const tasks = [
@@ -134,6 +136,8 @@ function App() {
                 <Notes subjects={profile.subjects} />
               ) : section === "Exams" ? (
                 <Exams subjects={profile.subjects} />
+              ) : section === "Analytics" ? (
+                <Analytics subjects={profile.subjects} />
               ) : section === "Home" ? (
                 <>
                   <div className="welcome-row">
