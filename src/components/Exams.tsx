@@ -60,10 +60,6 @@ export default function Exams({ subjects }: Props) {
     setEditingId(item.id); setTitle(item.title); setSubject(item.subject); setDate(item.date);
     setKind(item.kind); setNote(item.note); setChapter(""); setFormOpen(true);
   };
-  const openRevision = (item: Revision) => {
-    setEditingId(item.id); setTitle(""); setSubject(item.subject); setDate(item.date);
-    setKind("School exam"); setChapter(item.chapter); setNote(item.note); setStatus(item.status); setFormOpen(true);
-  };
   const save = (event: FormEvent) => {
     event.preventDefault();
     if (!subject || !date) return;
